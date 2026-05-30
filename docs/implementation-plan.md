@@ -1270,6 +1270,727 @@ def evaluate_whisper_wer(test_cases: list) -> float:
 
 ---
 
+---
+
+## PART 15: Multilingual Support — English, Bangla, এবং Mixed
+
+> **নতুন feature:** শুধু বাংলায় নয় — English অথবা English-Bangla mixed complain ও করা যাবে।
+> Whisper নিজেই language detect করবে এবং system সেই ভাষায় response দেবে।
+
+---
+
+### ১৫.১ কেন Multilingual দরকার?
+
+```
+Case 1: শহুরে শিক্ষিত বয়স্ক মানুষ
+        → "My son is not giving me food, he hit me yesterday"
+        → English complaint → English advice দেওয়া উচিত
+
+Case 2: NRB (বিদেশে থাকা বাংলাদেশি) family member রিপোর্ট করছে
+        → "আমার বাবাকে ছেলে বাড়ি থেকে evict করে দিয়েছে"
+        → Mixed complaint → Mixed response
+
+Case 3: গ্রামের বয়স্ক
+        → "আমার ছেলে আমারে মাইরা ফালাইছে"
+        → Pure Bangla (dialect) → Bangla advice
+```
+
+---
+
+### ১৫.২ Language Detection — Whisper দিয়ে (Step 1)
+
+**সবচেয়ে সহজ পদ্ধতি:** `language` parameter না দিলে Whisper নিজেই detect করে।
+
+```python
+# whisper_service.py — Updated for multilingual support
+
+from groq import Groq
+import os
+
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+def transcribe_multilingual(audio_file_path: str) -> dict:
+    """
+    Language auto-detect করে। Bangla, English, এবং mixed সব handle করে।
+    """
+    with open(audio_file_path, "rb") as audio_file:
+        transcription = client.audio.transcriptions.create(
+            file=audio_file,
+            model="whisper-large-v3-turbo",
+            # language parameter দিচ্ছি না → Whisper নিজেই detect করবে
+            response_format="verbose_json",
+            prompt="This is a complaint about elder abuse in Bangladesh. "
+                   "Speaker may use Bangla, English, or mix of both."
+        )
+
+    detected_lang = transcription.language  # "bn" বা "en" বা "hi" etc.
+    text = transcription.text
+
+    # "mixed" detect করা — উভয় script আছে কিনা দেখো
+    has_bangla  = any('ঀ' <= ch <= '৿' for ch in text)
+    has_english = any('a' <= ch.lower() <= 'z' for ch in text)
+
+    if has_bangla and has_english:
+        language_mode = "mixed"
+    elif has_bangla:
+        language_mode = "bangla"
+    else:
+        language_mode = "english"
+
+    return {
+        "text":          text,
+        "detected_lang": detected_lang,
+        "language_mode": language_mode,     # "bangla" | "english" | "mixed"
+        "segments":      transcription.segments,
+    }
+```
+
+**Output example:**
+```json
+{
+  "text": "আমার ছেলে আমাকে বাড়ি থেকে evict করে দিয়েছে, সে আমার property নিয়ে নিয়েছে",
+  "detected_lang": "bn",
+  "language_mode": "mixed",
+  "segments": [...]
+}
+```
+
+---
+
+### ১৫.৩ Keyword Classifier — Multilingual (Step 2)
+
+**বাংলা + English উভয় keyword রাখো:**
+
+```python
+# keyword_classifier.py — Multilingual version
+
+MULTILINGUAL_KEYWORDS = {
+    "physical": [
+        # Bangla
+        "মারধর", "আঘাত", "চড়", "লাথি", "মেরেছে", "ব্যথা", "রক্ত",
+        "হাসপাতাল", "জখম", "আহত",
+        # English
+        "beat", "hit", "slap", "punch", "kick", "assault", "injury",
+        "hospital", "hurt", "wound", "attack", "bruise", "fracture",
+        # Mixed common forms
+        "beat করেছে", "hit করেছে", "assault করা হয়েছে"
+    ],
+    "financial": [
+        # Bangla
+        "সম্পত্তি", "টাকা", "জমি", "ব্যাংক", "অ্যাকাউন্ট", "চুরি",
+        "প্রতারণা", "দলিল", "সই করানো", "জোর করে",
+        # English
+        "property", "money", "land", "bank", "account", "steal",
+        "fraud", "deed", "signature", "forced", "pension", "savings",
+        "inheritance", "assets", "dispossess",
+        # Mixed
+        "property নিয়ে গেছে", "account থেকে টাকা নিয়েছে"
+    ],
+    "abandonment": [
+        # Bangla
+        "বের করে দিয়েছে", "বাড়ি থেকে তাড়িয়ে", "রাস্তায় ফেলে",
+        "পরিত্যাগ", "একা ফেলে", "চলে গেছে", "দেখে না",
+        # English
+        "evict", "thrown out", "kicked out", "abandoned", "left alone",
+        "deserted", "homeless", "shelter", "expelled", "removed from home",
+        # Mixed
+        "evict করে দিয়েছে", "abandon করা হয়েছে"
+    ],
+    "verbal": [
+        # Bangla
+        "গালি", "অপমান", "হুমকি", "ভয় দেখানো", "চিৎকার",
+        "কথা শোনায় না", "তিরস্কার",
+        # English
+        "insult", "humiliate", "threaten", "threat", "yell", "scream",
+        "verbal abuse", "curse", "intimidate", "disrespect",
+        # Mixed
+        "threaten করেছে", "insult করে"
+    ],
+    "neglect": [
+        # Bangla
+        "খাবার দেয় না", "ওষুধ দেয় না", "যত্ন নেয় না", "অবহেলা",
+        "চিকিৎসা করায় না", "ভাত দেয় না",
+        # English
+        "not feeding", "no food", "no medicine", "neglect", "not caring",
+        "no medical", "starvation", "deprive", "deny food", "ignore",
+        # Mixed
+        "medicine দেয় না", "care করে না"
+    ],
+    "sexual": [
+        # Bangla
+        "যৌন হয়রানি", "অশ্লীল", "স্পর্শ",
+        # English
+        "sexual abuse", "harassment", "inappropriate touch", "molest",
+        "sexual assault"
+    ],
+    "psychological": [
+        # Bangla
+        "মানসিক নির্যাতন", "কষ্ট দেওয়া", "কাঁদানো",
+        # English
+        "mental abuse", "psychological", "emotional abuse", "trauma",
+        "distress", "depression caused", "mental torture"
+    ]
+}
+
+def classify_multilingual(text: str) -> dict:
+    text_lower = text.lower()
+    scores = {}
+
+    for category, keywords in MULTILINGUAL_KEYWORDS.items():
+        match_count  = sum(1 for kw in keywords if kw.lower() in text_lower)
+        match_weight = sum(len(kw.split()) for kw in keywords if kw.lower() in text_lower)
+        scores[category] = match_count + (match_weight * 0.1)
+
+    if not any(scores.values()):
+        return {"category": "unknown", "confidence": 0.0, "all_scores": scores}
+
+    top_category  = max(scores, key=scores.get)
+    total         = sum(scores.values())
+    confidence    = scores[top_category] / total if total > 0 else 0
+
+    return {
+        "category":   top_category,
+        "confidence": round(confidence, 2),
+        "all_scores": scores
+    }
+```
+
+---
+
+### ১৫.৪ Gemini — Language-Aware Legal Advice (Step 3)
+
+**Gemini কে বলো:** user যে ভাষায় কথা বলেছে সেই ভাষায় respond করো।
+
+```python
+# rag_engine.py — Multilingual version
+
+def get_legal_advice_multilingual(
+    transcript:    str,
+    category:      str,
+    language_mode: str,   # "bangla" | "english" | "mixed"
+    vectorstore,
+    gemini_model
+) -> dict:
+
+    # 1. RAG: ChromaDB থেকে relevant law sections খোঁজো
+    #    Multilingual embedding model — Bangla + English দুইটাই বোঝে
+    results = vectorstore.similarity_search(
+        query=f"{category}: {transcript}",
+        k=3
+    )
+    context = "\n\n".join([r.page_content for r in results])
+
+    # 2. Language-aware prompt তৈরি করো
+    if language_mode == "english":
+        response_instruction = "Respond ENTIRELY in English."
+        advice_field         = "legal_advice_english"
+        action_field         = "recommended_action_english"
+    elif language_mode == "bangla":
+        response_instruction = "সম্পূর্ণ বাংলায় উত্তর দাও।"
+        advice_field         = "legal_advice_bangla"
+        action_field         = "recommended_action_bangla"
+    else:  # mixed
+        response_instruction = (
+            "Respond in both Bangla and English. "
+            "Provide Bangla advice first, then English translation."
+        )
+        advice_field = "legal_advice_bangla"
+        action_field = "recommended_action_bangla"
+
+    prompt = f"""
+You are a legal assistance AI specialized in Bangladesh elder abuse law.
+Answer ONLY based on the legal sections provided below.
+Do NOT make up laws. {response_instruction}
+
+Legal Context (Bangladesh Laws):
+{context}
+
+Complaint (Transcript): {transcript}
+Initial Category: {category}
+Complaint Language: {language_mode}
+
+Respond in JSON format:
+{{
+  "abuse_type": "...",
+  "applicable_sections": ["PMA 2013 Section X", "BPC §XXX"],
+  "legal_advice_bangla": "...",
+  "legal_advice_english": "...",
+  "recommended_action_bangla": "...",
+  "recommended_action_english": "...",
+  "civil_or_criminal": "Civil | Criminal | Both",
+  "urgency": 1-5,
+  "response_language": "{language_mode}"
+}}
+"""
+
+    # 3. Gemini Flash এ পাঠাও
+    import google.generativeai as genai
+    response = gemini_model.generate_content(
+        prompt,
+        generation_config={"response_mime_type": "application/json"}
+    )
+
+    import json, re
+    try:
+        return json.loads(response.text)
+    except json.JSONDecodeError:
+        match = re.search(r'\{.*\}', response.text, re.DOTALL)
+        if match:
+            return json.loads(match.group())
+        return {"error": "Could not parse response", "raw": response.text}
+```
+
+---
+
+### ১৫.৫ PDF Generation — Bilingual Complaint Letter (Step 4)
+
+**English complaint → English PDF**
+**Bangla complaint → Bangla PDF**
+**Mixed → Bilingual PDF (দুই ভাষায়)**
+
+```python
+# pdf_generator.py — Multilingual version
+
+from fpdf import FPDF
+
+class BilingualComplaintPDF(FPDF):
+    def __init__(self, language_mode: str = "bangla"):
+        super().__init__()
+        self.language_mode = language_mode
+
+        # Bangla font (NotoSansBengali — Bangla + Latin support)
+        self.add_font("Bengali", fname="fonts/NotoSansBengali-Regular.ttf")
+        self.add_font("BengaliBold", fname="fonts/NotoSansBengali-Bold.ttf")
+
+    def header(self):
+        self.set_font("BengaliBold", size=13)
+        if self.language_mode == "english":
+            self.cell(0, 10, "Government of the People's Republic of Bangladesh", align="C", new_x="LMARGIN", new_y="NEXT")
+            self.cell(0, 8,  "Office of the Upazila Nirbahi Officer (UNO)", align="C", new_x="LMARGIN", new_y="NEXT")
+            self.cell(0, 8,  "COMPLAINT LETTER", align="C", new_x="LMARGIN", new_y="NEXT")
+        elif self.language_mode == "bangla":
+            self.cell(0, 10, "গণপ্রজাতন্ত্রী বাংলাদেশ সরকার", align="C", new_x="LMARGIN", new_y="NEXT")
+            self.cell(0, 8,  "উপজেলা নির্বাহী অফিসার বরাবর", align="C", new_x="LMARGIN", new_y="NEXT")
+            self.cell(0, 8,  "অভিযোগপত্র", align="C", new_x="LMARGIN", new_y="NEXT")
+        else:  # mixed
+            self.cell(0, 10, "গণপ্রজাতন্ত্রী বাংলাদেশ সরকার / Government of Bangladesh", align="C", new_x="LMARGIN", new_y="NEXT")
+            self.cell(0, 8,  "উপজেলা নির্বাহী অফিসার / Upazila Nirbahi Officer (UNO)", align="C", new_x="LMARGIN", new_y="NEXT")
+            self.cell(0, 8,  "অভিযোগপত্র / COMPLAINT LETTER", align="C", new_x="LMARGIN", new_y="NEXT")
+        self.ln(5)
+
+
+def generate_multilingual_pdf(case_data: dict, language_mode: str) -> bytes:
+    pdf = BilingualComplaintPDF(language_mode=language_mode)
+    pdf.add_page()
+    pdf.set_font("Bengali", size=10)
+
+    # ── Victim Info section ──────────────────────────────────────────
+    if language_mode == "english":
+        pdf.set_font("BengaliBold", size=11)
+        pdf.cell(0, 8, "COMPLAINANT INFORMATION:", new_x="LMARGIN", new_y="NEXT")
+        pdf.set_font("Bengali", size=10)
+        pdf.cell(0, 7, f"Name: {case_data.get('victim_name', 'Not provided')}", new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 7, f"Age:  {case_data.get('victim_age', 'Not provided')}", new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 7, f"Location: {case_data.get('location', 'Not provided')}", new_x="LMARGIN", new_y="NEXT")
+    elif language_mode == "bangla":
+        pdf.set_font("BengaliBold", size=11)
+        pdf.cell(0, 8, "অভিযোগকারীর তথ্য:", new_x="LMARGIN", new_y="NEXT")
+        pdf.set_font("Bengali", size=10)
+        pdf.cell(0, 7, f"নাম: {case_data.get('victim_name', 'অজ্ঞাত')}", new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 7, f"বয়স: {case_data.get('victim_age', 'অজ্ঞাত')}", new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 7, f"ঠিকানা: {case_data.get('location', 'অজ্ঞাত')}", new_x="LMARGIN", new_y="NEXT")
+    else:  # mixed — bilingual
+        pdf.set_font("BengaliBold", size=11)
+        pdf.cell(0, 8, "অভিযোগকারীর তথ্য / Complainant Information:", new_x="LMARGIN", new_y="NEXT")
+        pdf.set_font("Bengali", size=10)
+        pdf.cell(0, 7, f"নাম / Name: {case_data.get('victim_name', 'অজ্ঞাত / Not provided')}", new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 7, f"বয়স / Age: {case_data.get('victim_age', 'অজ্ঞাত')}", new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 7, f"ঠিকানা / Location: {case_data.get('location', 'Not provided')}", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(3)
+
+    # ── Transcript section ───────────────────────────────────────────
+    pdf.set_font("BengaliBold", size=11)
+    label = {
+        "english": "COMPLAINT STATEMENT:",
+        "bangla":  "ঘটনার বিবরণ:",
+        "mixed":   "ঘটনার বিবরণ / Complaint Statement:"
+    }[language_mode]
+    pdf.cell(0, 8, label, new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Bengali", size=10)
+    pdf.multi_cell(0, 7, case_data.get("transcript", ""))
+    pdf.ln(3)
+
+    # ── Legal Sections ───────────────────────────────────────────────
+    pdf.set_font("BengaliBold", size=11)
+    label2 = {
+        "english": "APPLICABLE LEGAL SECTIONS:",
+        "bangla":  "প্রযোজ্য আইনি ধারাসমূহ:",
+        "mixed":   "প্রযোজ্য আইনি ধারাসমূহ / Applicable Legal Sections:"
+    }[language_mode]
+    pdf.cell(0, 8, label2, new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Bengali", size=10)
+    for section in case_data.get("applicable_sections", []):
+        pdf.cell(0, 7, f"• {section}", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(3)
+
+    # ── Legal Advice ─────────────────────────────────────────────────
+    pdf.set_font("BengaliBold", size=11)
+    pdf.cell(0, 8, "আইনি পরামর্শ / Legal Advice:", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Bengali", size=10)
+
+    if language_mode in ("bangla", "mixed"):
+        pdf.multi_cell(0, 7, case_data.get("legal_advice_bangla", ""))
+    if language_mode in ("english", "mixed"):
+        if language_mode == "mixed":
+            pdf.ln(2)
+            pdf.set_font("BengaliBold", size=10)
+            pdf.cell(0, 7, "English:", new_x="LMARGIN", new_y="NEXT")
+            pdf.set_font("Bengali", size=10)
+        pdf.multi_cell(0, 7, case_data.get("legal_advice_english", ""))
+    pdf.ln(3)
+
+    # ── Recommended Actions ──────────────────────────────────────────
+    pdf.set_font("BengaliBold", size=11)
+    pdf.cell(0, 8, "সুপারিশকৃত পদক্ষেপ / Recommended Steps:", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Bengali", size=10)
+    if language_mode in ("bangla", "mixed"):
+        pdf.multi_cell(0, 7, case_data.get("recommended_action_bangla", ""))
+    if language_mode in ("english", "mixed"):
+        pdf.multi_cell(0, 7, case_data.get("recommended_action_english", ""))
+    pdf.ln(10)
+
+    # ── Helplines ────────────────────────────────────────────────────
+    pdf.set_font("BengaliBold", size=10)
+    pdf.cell(0, 7, "জরুরি নম্বর / Emergency Contacts:", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Bengali", size=10)
+    pdf.cell(0, 6, "• Emergency (Police/Fire/Ambulance): 999", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 6, "• Free Legal Aid (NLASO): 16430", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 6, "• Women Helpline: 10921", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(10)
+
+    # ── Signature ────────────────────────────────────────────────────
+    pdf.cell(60, 7, "স্বাক্ষর / Signature", border="T")
+    pdf.cell(10, 7, "")
+    pdf.cell(60, 7, "তারিখ / Date", border="T")
+
+    return bytes(pdf.output())
+```
+
+---
+
+### ১৫.৬ FastAPI Endpoint — Multilingual (Step 5)
+
+```python
+# main.py — Updated /transcribe endpoint
+
+from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+import tempfile, os, shutil
+
+app = FastAPI()
+app.add_middleware(CORSMiddleware, allow_origins=["*"],
+                   allow_methods=["*"], allow_headers=["*"])
+
+@app.post("/transcribe")
+async def transcribe_audio(audio: UploadFile = File(...)):
+    # 1. Audio সাময়িকভাবে save করো
+    with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as tmp:
+        shutil.copyfileobj(audio.file, tmp)
+        tmp_path = tmp.name
+
+    try:
+        # 2. Preprocess → WAV
+        wav_path = preprocess_audio(tmp_path)          # preprocessor.py
+
+        # 3. Whisper — Language auto-detect
+        result = transcribe_multilingual(wav_path)     # whisper_service.py
+        transcript    = result["text"]
+        language_mode = result["language_mode"]        # "bangla"|"english"|"mixed"
+
+        # 4. Keyword classify
+        classification = classify_multilingual(transcript)
+
+        # 5. RAG + Gemini — Language-aware advice
+        legal = get_legal_advice_multilingual(
+            transcript, classification["category"], language_mode,
+            vectorstore, gemini_model
+        )
+
+        # 6. PDF generate
+        case_data = {
+            "transcript":             transcript,
+            "abuse_type":             legal["abuse_type"],
+            "applicable_sections":    legal["applicable_sections"],
+            "legal_advice_bangla":    legal.get("legal_advice_bangla", ""),
+            "legal_advice_english":   legal.get("legal_advice_english", ""),
+            "recommended_action_bangla":  legal.get("recommended_action_bangla", ""),
+            "recommended_action_english": legal.get("recommended_action_english", ""),
+        }
+        pdf_bytes = generate_multilingual_pdf(case_data, language_mode)
+
+        # 7. Firebase তে save করো
+        pdf_url = upload_pdf_to_firebase(pdf_bytes)
+
+        return {
+            "transcript":    transcript,
+            "language_mode": language_mode,
+            "category":      classification["category"],
+            "confidence":    classification["confidence"],
+            "legal_advice":  legal,
+            "pdf_url":       pdf_url,
+            "urgency":       legal.get("urgency", 1)
+        }
+    finally:
+        os.unlink(tmp_path)
+        if os.path.exists(wav_path):
+            os.unlink(wav_path)
+```
+
+---
+
+### ১৫.৭ Frontend — Language Indicator + Text Input (Step 6)
+
+**User যেন text দিয়েও complain করতে পারে (typing):**
+
+```jsx
+// ComplaintInput.jsx — Voice + Text input, multilingual
+
+import { useState } from 'react';
+
+const LANG_LABELS = {
+  bangla:  { badge: "🇧🇩 বাংলা",  color: "bg-green-100 text-green-800" },
+  english: { badge: "🇬🇧 English", color: "bg-blue-100 text-blue-800" },
+  mixed:   { badge: "🔀 Mixed",    color: "bg-purple-100 text-purple-800" },
+  null:    { badge: "...",         color: "bg-gray-100 text-gray-600" }
+};
+
+export default function ComplaintInput({ onSubmit }) {
+  const [mode,          setMode]          = useState("voice"); // "voice"|"text"
+  const [textInput,     setTextInput]     = useState("");
+  const [detectedLang,  setDetectedLang]  = useState(null);
+  const [isProcessing,  setIsProcessing]  = useState(false);
+
+  // Voice complaint submit
+  const handleVoiceComplete = async (audioBlob) => {
+    setIsProcessing(true);
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "recording.webm");
+
+    const res    = await fetch("http://localhost:8000/transcribe", { method: "POST", body: formData });
+    const result = await res.json();
+    setDetectedLang(result.language_mode);
+    onSubmit(result);
+    setIsProcessing(false);
+  };
+
+  // Text complaint submit (English, Bangla, or mixed typing)
+  const handleTextSubmit = async () => {
+    if (!textInput.trim()) return;
+    setIsProcessing(true);
+
+    const res    = await fetch("http://localhost:8000/transcribe/text", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ text: textInput })
+    });
+    const result = await res.json();
+    setDetectedLang(result.language_mode);
+    onSubmit(result);
+    setIsProcessing(false);
+  };
+
+  const langInfo = LANG_LABELS[detectedLang] || LANG_LABELS[null];
+
+  return (
+    <div className="flex flex-col gap-4 p-4">
+      {/* Mode toggle */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setMode("voice")}
+          className={`flex-1 py-2 rounded-lg font-bold ${mode === "voice" ? "bg-red-600 text-white" : "bg-gray-200"}`}
+        >
+          🎤 কথা বলুন / Speak
+        </button>
+        <button
+          onClick={() => setMode("text")}
+          className={`flex-1 py-2 rounded-lg font-bold ${mode === "text" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+        >
+          ✍️ টাইপ করুন / Type
+        </button>
+      </div>
+
+      {/* Language badge */}
+      {detectedLang && (
+        <div className={`px-3 py-1 rounded-full text-sm font-medium w-fit ${langInfo.color}`}>
+          {langInfo.badge} Detected
+        </div>
+      )}
+
+      {/* Voice mode */}
+      {mode === "voice" && (
+        <VoiceRecorder onRecordingComplete={handleVoiceComplete} />
+      )}
+
+      {/* Text mode — English, Bangla, or mixed */}
+      {mode === "text" && (
+        <div className="flex flex-col gap-3">
+          <p className="text-sm text-gray-500">
+            বাংলায় বা English এ বা দুইটা মিলিয়ে লিখতে পারেন।
+            <br/>You can write in Bangla, English, or both.
+          </p>
+          <textarea
+            value={textInput}
+            onChange={(e) => setTextInput(e.target.value)}
+            className="w-full h-40 p-3 border-2 rounded-lg text-lg"
+            placeholder="আপনার অভিযোগ এখানে লিখুন... / Write your complaint here..."
+            dir="auto"  // ← RTL/LTR auto-detect
+          />
+          <button
+            onClick={handleTextSubmit}
+            disabled={isProcessing || !textInput.trim()}
+            className="bg-blue-600 text-white py-3 rounded-lg font-bold text-lg disabled:opacity-50"
+          >
+            {isProcessing ? "Processing..." : "Submit / জমা দিন"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+---
+
+### ১৫.৮ Text-Input Endpoint — FastAPI (Typing এর জন্য)
+
+```python
+# main.py — /transcribe/text endpoint যোগ করো
+
+from pydantic import BaseModel
+
+class TextComplaintRequest(BaseModel):
+    text:       str
+    victim_name: str | None = None
+    victim_age:  str | None = None
+    location:    str | None = None
+
+@app.post("/transcribe/text")
+async def transcribe_text(request: TextComplaintRequest):
+    """Voice ছাড়াও text দিয়ে complain করার endpoint"""
+    transcript = request.text
+
+    # Language detect (Whisper ছাড়াই)
+    has_bangla  = any('ঀ' <= ch <= '৿' for ch in transcript)
+    has_english = any('a' <= ch.lower() <= 'z'   for ch in transcript)
+
+    if has_bangla and has_english:
+        language_mode = "mixed"
+    elif has_bangla:
+        language_mode = "bangla"
+    else:
+        language_mode = "english"
+
+    # Classify + RAG + PDF (same as voice endpoint)
+    classification = classify_multilingual(transcript)
+    legal = get_legal_advice_multilingual(
+        transcript, classification["category"], language_mode,
+        vectorstore, gemini_model
+    )
+
+    case_data = {
+        "transcript":                 transcript,
+        "victim_name":                request.victim_name or ("অজ্ঞাত" if language_mode != "english" else "Not provided"),
+        "victim_age":                 request.victim_age or ("অজ্ঞাত" if language_mode != "english" else "Not provided"),
+        "location":                   request.location or ("অজ্ঞাত" if language_mode != "english" else "Not provided"),
+        "applicable_sections":        legal["applicable_sections"],
+        "legal_advice_bangla":        legal.get("legal_advice_bangla", ""),
+        "legal_advice_english":       legal.get("legal_advice_english", ""),
+        "recommended_action_bangla":  legal.get("recommended_action_bangla", ""),
+        "recommended_action_english": legal.get("recommended_action_english", ""),
+    }
+    pdf_bytes = generate_multilingual_pdf(case_data, language_mode)
+    pdf_url   = upload_pdf_to_firebase(pdf_bytes)
+
+    return {
+        "transcript":    transcript,
+        "language_mode": language_mode,
+        "category":      classification["category"],
+        "confidence":    classification["confidence"],
+        "legal_advice":  legal,
+        "pdf_url":       pdf_url,
+        "urgency":       legal.get("urgency", 1)
+    }
+```
+
+---
+
+### ১৫.৯ Multilingual এ কোন Language তে কী হবে
+
+| Input Language | Whisper | Keyword Dict | Gemini Response | PDF |
+|---|---|---|---|---|
+| শুধু বাংলা | `language_mode = "bangla"` | Bangla keywords match | সম্পূর্ণ বাংলায় | বাংলা অভিযোগপত্র |
+| শুধু English | `language_mode = "english"` | English keywords match | Entirely English | English Complaint Letter |
+| Mixed (Banglish) | `language_mode = "mixed"` | Both match | Bangla + English both | Bilingual PDF |
+| Typing (text input) | Script detection দিয়ে | Same | Same | Same |
+
+---
+
+### ১৫.১০ Keyword Dictionary Update — Checklist
+
+Phase 1 এ `keyword_dictionary.json` বানানোর সময় এই format follow করো:
+
+```json
+{
+  "physical": {
+    "bangla": ["মারধর", "আঘাত", "চড়", "লাথি", "মেরেছে"],
+    "english": ["beat", "hit", "slap", "assault", "punch", "kick", "injury"],
+    "mixed_forms": ["beat করেছে", "hit করা হয়েছে", "assault করা হয়েছে"]
+  },
+  "financial": {
+    "bangla": ["সম্পত্তি", "টাকা", "জমি", "দলিল", "প্রতারণা"],
+    "english": ["property", "money", "land", "deed", "fraud", "savings", "inheritance"],
+    "mixed_forms": ["property নিয়েছে", "account থেকে টাকা নিয়েছে"]
+  },
+  "abandonment": {
+    "bangla": ["বের করে দিয়েছে", "পরিত্যাগ", "রাস্তায় ফেলে", "একা ফেলে"],
+    "english": ["evict", "abandoned", "thrown out", "kicked out", "homeless"],
+    "mixed_forms": ["evict করে দিয়েছে", "abandon করা হয়েছে"]
+  },
+  "verbal": {
+    "bangla": ["গালি", "অপমান", "হুমকি", "ভয় দেখানো"],
+    "english": ["insult", "threaten", "threat", "verbal abuse", "humiliate"],
+    "mixed_forms": ["threaten করেছে", "insult করে"]
+  },
+  "neglect": {
+    "bangla": ["খাবার দেয় না", "ওষুধ দেয় না", "যত্ন নেয় না", "অবহেলা"],
+    "english": ["not feeding", "no food", "no medicine", "neglect", "deprive"],
+    "mixed_forms": ["medicine দেয় না", "care করে না", "feed করে না"]
+  }
+}
+```
+
+---
+
+### ১৫.১১ Multilingual Checklist (Phase 2 এ যোগ করো)
+
+```
+□ whisper_service.py — language parameter remove করো (auto-detect)
+□ keyword_classifier.py — English + Bangla + mixed keywords যোগ করো
+□ keyword_dictionary.json — bilingual format (bangla/english/mixed_forms)
+□ rag_engine.py — language_mode parameter যোগ করো
+□ Gemini prompt — language-aware instruction যোগ করো
+□ pdf_generator.py — BilingualComplaintPDF class তৈরি করো
+□ main.py — /transcribe endpoint এ language_mode return করো
+□ main.py — /transcribe/text endpoint তৈরি করো (typing এর জন্য)
+□ Frontend — mode toggle (Voice / Type) তৈরি করো
+□ Frontend — Language badge দেখানো ("বাংলা" / "English" / "Mixed")
+□ Test: English complaint → English PDF verify করো
+□ Test: Bangla complaint → Bangla PDF verify করো
+□ Test: Mixed complaint → Bilingual PDF verify করো
+```
+
+---
+
 *Document Created: 28 May 2026*
-*Next Update: After Phase 1 completion*
+*Last Updated: 29 May 2026 — Added PART 15: Multilingual Support (English, Bangla, Mixed)*
 *Maintained by: Lamia Islam Mim (2212085042)*
