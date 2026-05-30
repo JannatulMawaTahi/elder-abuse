@@ -1,0 +1,149 @@
+{
+  "pma_sec1": {
+    "section": "PMA 2013 — Section 1: Short Title and Commencement",
+    "text": "এই আইন পিতা-মাতার ভরণ-পোষণ আইন, ২০১৩ নামে পরিচিত হইবে। এই আইন ২৭ অক্টোবর ২০১৩ তারিখে কার্যকর হয়। এটি ২০১৩ সনের ৪৯ নং আইন।",
+    "text_english": "This Act may be called the Parents Maintenance Act, 2013. It came into force on 27 October 2013. This is Act No. 49 of 2013.",
+    "applicable_for": [
+      "all"
+    ],
+    "severity_min": 1
+  },
+  "pma_sec2": {
+    "section": "PMA 2013 — Section 2: Definitions",
+    "text": "এই আইনে — \"পিতা\" অর্থ যে ব্যক্তি সন্তানকে জন্মদান করিয়াছেন (শুধু জন্মদাতা, সৎ পিতা নহে); \"মাতা\" অর্থ যে নারী সন্তানকে গর্ভে ধারণ ও প্রসব করিয়াছেন (শুধু জন্মদাত্রী, সৎ মাতা নহে); \"সন্তান\" অর্থ পুত্র ও কন্যা উভয়ই, বিবাহিত বা অবিবাহিত; \"ভরণ-পোষণ\" অর্থ খাদ্য, বস্ত্র, চিকিৎসা সেবা, বাসস্থান এবং সঙ্গ প্রদান; \"উপজেলা নির্বাহী অফিসার\" (UNO) অর্থ সংশ্লিষ্ট উপজেলার নির্বাহী কর্মকর্তা।",
+    "text_english": "In this Act: \"Father\" means biological father only (step-father excluded); \"Mother\" means biological mother only (step-mother excluded); \"Child\" means both son and daughter, married or unmarried; \"Maintenance\" means food, clothing, medical care, shelter AND companionship; \"UNO\" means Upazila Nirbahi Officer of the concerned upazila.",
+    "applicable_for": [
+      "all"
+    ],
+    "severity_min": 1
+  },
+  "pma_sec3": {
+    "section": "PMA 2013 — Section 3: Maintenance Obligation",
+    "text": "প্রতিটি সন্তান তাদের পিতামাতার ভরণ-পোষণ করিতে বাধ্য। পিতামাতা যদি সন্তানের সাথে না থাকেন, তাহলে প্রতিটি সন্তান নিজ আয় বা সম্পদ হইতে পিতামাতার জন্য যুক্তিসংগত পরিমাণ অর্থ প্রদান করিবে। একাধিক সন্তান থাকিলে, তাহারা পরস্পর আলাপ-আলোচনার মাধ্যমে ভরণ-পোষণের ব্যবস্থা করিবে। সন্তান পিতামাতাকে তাহার বাসস্থানে রাখিবে এবং পিতামাতার সহিত বসবাস করিবে। পিতামাতাকে তাহাদের ইচ্ছার বিরুদ্ধে বৃদ্ধাশ্রমে পাঠানো যাইবে না। পিতামাতার অনুপস্থিতিতে পিতার পিতামাতা (দাদা-দাদি) এবং মাতার পিতামাতা (নানা-নানি) একইরূপে ভরণ-পোষণ পাইবার অধিকারী।",
+    "text_english": "Every child is obligated to maintain their parents. If parents do not live with the child, each child shall provide a reasonable amount from their income or assets for parents maintenance. If there are multiple children, they shall collectively arrange maintenance through mutual discussion. Children must accommodate parents in their residence. Parents cannot be sent to an old-age home against their will. In the absence of parents, paternal grandparents and maternal grandparents are equally entitled to maintenance.",
+    "applicable_for": [
+      "neglect",
+      "abandonment",
+      "financial"
+    ],
+    "severity_min": 2
+  },
+  "pma_sec4": {
+    "section": "PMA 2013 — Section 4: Prohibition of Medical Neglect and Abandonment",
+    "text": "কোনো সন্তান পিতামাতার চিকিৎসা সেবা প্রদান হইতে বিরত থাকিবে না। পিতামাতাকে পরিত্যাগ করা বা গৃহহীন করা সম্পূর্ণ নিষিদ্ধ। সন্তান পিতামাতার নিয়মিত স্বাস্থ্য পরীক্ষা নিশ্চিত করিবে। পিতামাতা আলাদা বসবাস করিলেও সন্তান নিয়মিত তাহাদের দেখিতে যাইবে।",
+    "text_english": "No child shall withhold medical care from parents. Abandoning or making parents homeless is completely prohibited. Children must ensure regular health check-ups for parents. Even if parents live separately, children must visit them regularly.",
+    "applicable_for": [
+      "neglect",
+      "abandonment"
+    ],
+    "severity_min": 2
+  },
+  "pma_sec5": {
+    "section": "PMA 2013 — Section 5: Complaint Procedure (UNO)",
+    "text": "কোনো পিতা বা মাতা ভরণ-পোষণ না পাইলে সংশ্লিষ্ট উপজেলার উপজেলা নির্বাহী অফিসার (UNO) বরাবর লিখিত অভিযোগ দাখিল করিতে পারিবেন। শুধুমাত্র পিতামাতা নিজে অভিযোগ করিতে পারিবেন; আদালত স্বতঃপ্রণোদিতভাবে মামলা গ্রহণ করিতে পারিবে না। অভিযোগ প্রাপ্তির পর UNO উভয় পক্ষকে শুনানির জন্য সমন প্রদান করিবেন। ইউনিয়ন পরিষদের চেয়ারম্যান বা পৌরসভার মেয়রও আপোষ মীমাংসার ব্যবস্থা করিতে পারিবেন। অপরাধ আমলযোগ্য (Cognizable), জামিনযোগ্য (Bailable) এবং আপোষযোগ্য (Compoundable)।",
+    "text_english": "If any parent does not receive maintenance, they may file a written complaint with the Upazila Nirbahi Officer (UNO) of the concerned upazila. Only parents themselves can file complaints; courts cannot take suo motu cognizance. Upon receiving complaint, UNO shall summon both parties for hearing. Union Council chairpersons or municipal mayors can also mediate amicable settlements. The offence is Cognizable, Bailable and Compoundable.",
+    "applicable_for": [
+      "all"
+    ],
+    "severity_min": 1
+  },
+  "pma_sec6": {
+    "section": "PMA 2013 — Section 6: Powers of UNO",
+    "text": "উপজেলা নির্বাহী অফিসার (UNO) অভিযোগ তদন্ত করিবেন এবং উভয় পক্ষ শুনানির সুযোগ দিবেন। UNO প্রয়োজনে মধ্যস্থতার মাধ্যমে আপোষ মীমাংসার ব্যবস্থা করিতে পারিবেন। UNO সন্তানকে নির্দিষ্ট পরিমাণ ভরণ-পোষণ প্রদানের আদেশ দিতে পারিবেন। আদেশ অমান্য করিলে UNO বিষয়টি দণ্ড আরোপের জন্য প্রেরণ করিবেন।",
+    "text_english": "The UNO shall investigate the complaint and give both parties opportunity to be heard. UNO may facilitate amicable settlement through mediation. UNO can order the child to pay a specified amount for maintenance. If the order is defied, UNO shall refer the matter for penalty imposition.",
+    "applicable_for": [
+      "all"
+    ],
+    "severity_min": 1
+  },
+  "pma_sec7": {
+    "section": "PMA 2013 — Section 7: Penalty (Punishment)",
+    "text": "এই আইনের কোনো বিধান লঙ্ঘন করিলে সন্তান অনূর্ধ্ব ১,০০,০০০ (এক লক্ষ) টাকা অর্থদণ্ডে দণ্ডিত হইবেন। অর্থদণ্ড অনাদায়ের ক্ষেত্রে অনূর্ধ্ব ৩ (তিন) মাস কারাদণ্ডে দণ্ডিত হইবেন। [সংশোধনী নোট: আগে ৫,০০০ টাকা ও ১ মাস কারাদণ্ড ছিল — bdlaws যাচাই করে সংশোধন করা হয়েছে।]",
+    "text_english": "Violation of any provision of this Act shall be punishable with a fine not exceeding Taka 1,00,000 (one lakh). In case of non-payment, imprisonment not exceeding 3 (three) months. [Correction note: Previously stated as 5,000 taka/1 month — corrected after bdlaws verification.]",
+    "applicable_for": [
+      "all"
+    ],
+    "severity_min": 1
+  },
+  "pma_sec8": {
+    "section": "PMA 2013 — Section 8: Emergency and Interim Assistance",
+    "text": "জরুরি পরিস্থিতিতে UNO অন্তর্বর্তীকালীন আদেশ দিতে পারিবেন। বিপদে পড়া পিতামাতাকে তাৎক্ষণিক সহায়তা দেওয়ার ব্যবস্থা করিতে হইবে।",
+    "text_english": "In emergency situations, the UNO may issue interim orders. Arrangements must be made for immediate assistance to parents in distress.",
+    "applicable_for": [
+      "all"
+    ],
+    "severity_min": 4
+  },
+  "pma_sec9": {
+    "section": "PMA 2013 — Section 9: Rules / Savings",
+    "text": "সরকার এই আইনের উদ্দেশ্য পূরণকল্পে বিধিমালা প্রণয়ন করিতে পারিবে। [নোট: Section 9 এর সম্পূর্ণ পাঠ্য bdlaws থেকে সরাসরি verify করা প্রয়োজন।]",
+    "text_english": "The government may make rules for the purpose of this Act. [Note: Section 9 full text needs direct verification from bdlaws.minlaw.gov.bd]",
+    "applicable_for": [
+      "all"
+    ],
+    "severity_min": 1
+  },
+  "bpc_302": {
+    "section": "BPC Section 302 — Punishment for Murder",
+    "text": "যে ব্যক্তি হত্যাকাণ্ড ঘটায় তাকে মৃত্যুদণ্ড বা যাবজ্জীবন কারাদণ্ড এবং অর্থদণ্ডে দণ্ডিত করা হইবে।",
+    "text_english": "Whoever commits murder shall be punished with death or imprisonment for life, and shall also be liable to fine.",
+    "applicable_for": [
+      "murder"
+    ],
+    "severity_min": 5
+  },
+  "bpc_304": {
+    "section": "BPC Section 304 — Culpable Homicide (Not Murder)",
+    "text": "অনিচ্ছাকৃত হত্যার ক্ষেত্রে যাবজ্জীবন কারাদণ্ড বা ১০ বছর পর্যন্ত কারাদণ্ড এবং অর্থদণ্ড হইবে।",
+    "text_english": "Culpable homicide not amounting to murder: imprisonment for life or up to 10 years, and fine.",
+    "applicable_for": [
+      "murder"
+    ],
+    "severity_min": 5
+  },
+  "bpc_323": {
+    "section": "BPC Section 323 — Voluntarily Causing Hurt",
+    "text": "যে ব্যক্তি স্বেচ্ছায় কাউকে আঘাত করে তাকে ১ বছর পর্যন্ত কারাদণ্ড বা ১,০০০ টাকা পর্যন্ত অর্থদণ্ড অথবা উভয় দণ্ডে দণ্ডিত করা হইবে।",
+    "text_english": "Whoever voluntarily causes hurt shall be punished with imprisonment up to 1 year, or fine up to Taka 1,000, or both.",
+    "applicable_for": [
+      "physical"
+    ],
+    "severity_min": 4
+  },
+  "bpc_324": {
+    "section": "BPC Section 324 — Causing Hurt by Dangerous Weapon",
+    "text": "বিপজ্জনক অস্ত্র দ্বারা আঘাত করিলে ৩ বছর পর্যন্ত কারাদণ্ড বা অর্থদণ্ড অথবা উভয় দণ্ড হইবে।",
+    "text_english": "Voluntarily causing hurt by dangerous weapons: imprisonment up to 3 years, or fine, or both.",
+    "applicable_for": [
+      "physical"
+    ],
+    "severity_min": 4
+  },
+  "bpc_406": {
+    "section": "BPC Section 406 — Criminal Breach of Trust",
+    "text": "বিশ্বাস ভঙ্গ করিয়া সম্পত্তি আত্মসাৎ করিলে ৩ বছর পর্যন্ত কারাদণ্ড বা অর্থদণ্ড অথবা উভয় দণ্ডে দণ্ডিত হইবে।",
+    "text_english": "Whoever commits criminal breach of trust shall be punished with imprisonment up to 3 years, or fine, or both.",
+    "applicable_for": [
+      "financial"
+    ],
+    "severity_min": 2
+  },
+  "bpc_420": {
+    "section": "BPC Section 420 — Cheating and Property Fraud",
+    "text": "প্রতারণা করিয়া সম্পত্তি হাতিয়ে নিলে ৭ বছর পর্যন্ত কারাদণ্ড এবং অর্থদণ্ডে দণ্ডিত হইবে।",
+    "text_english": "Cheating and dishonestly inducing delivery of property: imprisonment up to 7 years and fine.",
+    "applicable_for": [
+      "financial"
+    ],
+    "severity_min": 2
+  },
+  "bpc_506": {
+    "section": "BPC Section 506 — Criminal Intimidation (Threat)",
+    "text": "কাউকে ভয় দেখাইলে ২ বছর পর্যন্ত কারাদণ্ড বা অর্থদণ্ড অথবা উভয় দণ্ড হইবে। মৃত্যু বা গুরুতর ক্ষতির হুমকি দিলে ৭ বছর পর্যন্ত কারাদণ্ড।",
+    "text_english": "Criminal intimidation: imprisonment up to 2 years, or fine, or both. If threat be of death or grievous hurt: up to 7 years imprisonment.",
+    "applicable_for": [
+      "verbal"
+    ],
+    "severity_min": 1
+  }
+}

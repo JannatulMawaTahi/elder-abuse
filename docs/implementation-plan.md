@@ -716,7 +716,7 @@ Option 1: Print করে UNO অফিসে জমা দেওয়া
           ↓
           UNO (Upazila Nirbahi Officer) শুনানি করবে
           PMA 2013 Section 6 অনুযায়ী আদেশ দেবে
-          Punishment: ১ মাস jail বা ৫,০০০ টাকা fine
+          Punishment: ১,০০,০০০ টাকা জরিমানা, অনাদায়ে ৩ মাস কারাদণ্ড
 
 Option 2: Police Station এ FIR করা
           ↓

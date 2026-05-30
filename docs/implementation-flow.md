@@ -269,7 +269,7 @@ elder-abuse/
   },
   "sec7": {
     "section": "PMA 2013 — Section 7",
-    "text": "শাস্তি: ১ মাস কারাদণ্ড বা ৫,০০০ টাকা জরিমানা..."
+    "text": "শাস্তি: অনূর্ধ্ব ১,০০,০০০ টাকা অর্থদণ্ড এবং অনাদায়ে অনূর্ধ্ব ৩ মাস কারাদণ্ড..."
   },
   "bpc_323": {
     "section": "BPC §323 — Voluntarily Causing Hurt",
@@ -289,13 +289,13 @@ elder-abuse/
 #### Phase 1 Deliverables:
 ```
 ✅ data/Elder_abuse_Dataset.csv          (199 rows — loaded)
-✅ notebooks/01_eda.ipynb               (21 cells, 11 charts — done)
+✅ notebooks/01_eda.ipynb               (53 cells, 11 charts — done)
 ✅ data/chart_01 to chart_11.png        (EDA charts — done)
-⏭️ data/cleaned_dataset.csv             ← Step 2 (NEXT)
-⬜ data/train_split.csv
-⬜ data/test_split.csv
-⬜ backend/phase1_outputs/keyword_dictionary.json   ← Step 3
-⬜ backend/phase1_outputs/act_knowledge_base.json   ← Step 4
+✅ data/cleaned_dataset.csv             (199 rows, 20 cols, 86.1 KB)
+✅ data/train_split.csv                 (159 rows, 20 cols)
+✅ data/test_split.csv                  (40 rows, 20 cols)
+✅ backend/phase1_outputs/keyword_dictionary.json   (6 categories, 231 keywords)
+✅ backend/phase1_outputs/act_knowledge_base.json   (16 sections, 9 PMA + 7 BPC)
 ```
 
 #### Common Errors (Phase 1):
@@ -913,20 +913,20 @@ Start: Now           End: Week 8
 ```
 ── PHASE 1 ──────────────────────────────────────────────────────
 ✅ Step 1:  data/ folder + dataset load + EDA notebook (11 charts)
-⏭️ Step 2:  cleaned_dataset.csv + train/test split         ← NEXT
-⬜ Step 3:  keyword_dictionary.json তৈরি
-⬜ Step 4:  act_knowledge_base.json তৈরি
+✅ Step 2:  cleaned_dataset.csv + train/test split
+✅ Step 3:  keyword_dictionary.json তৈরি
+✅ Step 4:  act_knowledge_base.json তৈরি (16 sections)
 
 ── PHASE 2 ──────────────────────────────────────────────────────
-⬜ Step 5:  backend/app/ setup + requirements.txt + .env
-⬜ Step 6:  preprocessor.py (audio → WAV)
-⬜ Step 7:  whisper_service.py (Groq API)
-⬜ Step 8:  keyword_classifier.py
-⬜ Step 9:  main.py — /health + /transcribe + /transcribe/text
-⬜ Step 10: Phase 2 test complete
+✅ Step 5:  backend/app/ setup + requirements.txt + .env
+✅ Step 6:  preprocessor.py (audio → WAV)
+✅ Step 7:  whisper_service.py (Groq API)
+✅ Step 8:  keyword_classifier.py
+✅ Step 9:  main.py — /health + /transcribe + /transcribe/text
+✅ Step 10: Phase 2 test complete (3 real audio tests, English perfect)
 
 ── PHASE 3 ──────────────────────────────────────────────────────
-⬜ Step 11: ChromaDB vector store build
+⏭️ Step 11: ChromaDB vector store build                       ← NEXT
 ⬜ Step 12: rag_engine.py (Gemini Flash)
 ⬜ Step 13: entity_extractor.py (basic regex)
 ⬜ Step 14: pdf_generator.py (fpdf2 + NotoSansBengali)
@@ -946,7 +946,7 @@ Start: Now           End: Week 8
 ⬜ Step 24: Thesis + demo video + presentation
 ```
 
-**Progress: 1 / 24 Steps complete (4.2%)**
+**Progress: 10 / 24 Steps complete (41.7%)** — 🎉 **PHASE 2 COMPLETE**
 
 ---
 
@@ -1014,9 +1014,9 @@ npm run dev
 
 | Phase | Status | Week | Done | Pending |
 |-------|--------|------|------|---------|
-| **Phase 1** — Dataset & EDA | 🔄 Partially Done | Week 1–2 | Step 1 | Steps 2, 3, 4 |
-| **Phase 2** — Backend + Whisper | ⬜ Pending | Week 2–3 | — | Steps 5–10 |
-| **Phase 3** — RAG + PDF | ⬜ Pending | Week 4–5 | — | Steps 11–16 |
+| **Phase 1** — Dataset & EDA | ✅ **Done** | Week 1–2 | Steps 1, 2, 3, 4 | — |
+| **Phase 2** — Backend + Whisper | ✅ **Done** | Week 2–3 | Steps 5–10 | — |
+| **Phase 3** — RAG + PDF | ⏭️ **Next Up** | Week 4–5 | — | Steps 11–16 |
 | **Phase 4** — Frontend + Map | ⬜ Pending | Week 6–7 | — | Steps 17–22 |
 | **Phase 5** — Test + Deploy | ⬜ Pending | Week 8 | — | Steps 23–24 |
 
@@ -1037,11 +1037,15 @@ npm run dev
 | 11 EDA charts | ✅ Done | Saved in `data/` folder |
 | `.gitignore` | ✅ Done | data CSV + venv excluded |
 | **Step 1 — Dataset Load + EDA** | ✅ **DONE** | Confirmed by Lamia |
-| `data/cleaned_dataset.csv` | ⏭️ **NEXT** | Step 2 |
-| `data/train_split.csv` | ⬜ Pending | Step 2 |
-| `data/test_split.csv` | ⬜ Pending | Step 2 |
-| `backend/phase1_outputs/keyword_dictionary.json` | ⬜ Pending | Step 3 |
-| `backend/phase1_outputs/act_knowledge_base.json` | ⬜ Pending | Step 4 |
+| `data/cleaned_dataset.csv` | ✅ Done | 199 rows, 20 cols, 86.1 KB |
+| `data/train_split.csv` | ✅ Done | 159 rows, 20 cols |
+| `data/test_split.csv` | ✅ Done | 40 rows, 20 cols |
+| **Step 2 — Cleaning + Train/Test Split** | ✅ **DONE** | Confirmed by Lamia |
+| `backend/phase1_outputs/keyword_dictionary.json` | ✅ Done | 6 categories, 231 keywords, 6.4 KB |
+| **Step 3 — keyword_dictionary.json** | ✅ **DONE** | Confirmed by Lamia |
+| `backend/phase1_outputs/act_knowledge_base.json` | ✅ Done | 16 sections (9 PMA + 7 BPC), 14.7 KB |
+| **Step 4 — act_knowledge_base.json** | ✅ **DONE** | Confirmed by Lamia |
+| **PHASE 1 — Dataset & EDA** | 🎉 **COMPLETE** | All 4 steps done |
 
 ---
 
@@ -1049,14 +1053,30 @@ npm run dev
 
 | Item | Status | Notes |
 |------|--------|-------|
-| `backend/app/` folder structure | ⬜ Pending | Step 5 |
-| `requirements.txt` | ⬜ Pending | Step 5 |
-| `.env` file | ⬜ Pending | Step 5 |
-| `preprocessor.py` | ⬜ Pending | Step 6 |
-| `whisper_service.py` (Groq API) | ⬜ Pending | Step 7 |
-| `keyword_classifier.py` | ⬜ Pending | Step 8 |
-| `main.py` (FastAPI) | ⬜ Pending | Step 9 |
-| API test (/health, /transcribe) | ⬜ Pending | Step 10 |
+| `backend/app/` folder structure | ✅ Done | Created with __init__.py |
+| `requirements.txt` | ✅ Done | 14 packages + audioop-lts for Python 3.14 |
+| `.env` file | ✅ Done | GROQ_API_KEY configured |
+| `venv/` virtual environment | ✅ Done | All packages installed & verified |
+| **Step 5 — Backend Setup** | ✅ **DONE** | Confirmed by Lamia |
+| `preprocessor.py` | ✅ Done | 8/8 tests passed, ffmpeg + pydub working |
+| `tests/test_preprocessor.py` | ✅ Done | 8 test cases for format conversion |
+| **Step 6 — Audio Preprocessor** | ✅ **DONE** | Confirmed by Lamia |
+| `whisper_service.py` (Groq API) | ✅ Done | 12/12 tests passed inc. real API call |
+| `tests/test_whisper_service.py` | ✅ Done | Language detection + mock + real API |
+| **Step 7 — Whisper Service (Groq)** | ✅ **DONE** | Confirmed by Lamia |
+| `keyword_classifier.py` | ✅ Done | 29/29 tests passed, multilingual + entity extract |
+| `tests/test_keyword_classifier.py` | ✅ Done | Category, legal, entity, edge cases |
+| **Step 8 — Keyword Classifier** | ✅ **DONE** | Confirmed by Lamia |
+| `main.py` (FastAPI) | ✅ Done | 3 endpoints + CORS + lifespan, 15/15 tests passed |
+| `tests/test_main.py` | ✅ Done | Health, /transcribe, /transcribe/text + CORS |
+| Browser test (Swagger /docs) | ✅ Done | Confirmed by Lamia (financial detected from text) |
+| **Step 9 — FastAPI Server** | ✅ **DONE** | Confirmed by Lamia |
+| End-to-end test — English audio | ✅ Done | 100% accurate, abandonment detected |
+| End-to-end test — Bangla audio | ✅ Done | Pipeline OK; Whisper typos → Phase 3 RAG |
+| End-to-end test — Mixed audio | ✅ Done | Pipeline OK; Whisper mangles EN words → Phase 3 |
+| Entity false-positive bug fix | ✅ Done | Token-based Bangla matching, 34 classifier tests |
+| **Step 10 — Phase 2 E2E Test** | ✅ **DONE** | Confirmed by Lamia — 66 tests passing |
+| **PHASE 2 — Backend + Whisper** | 🎉 **COMPLETE** | All 6 steps done |
 
 ---
 
@@ -1064,7 +1084,7 @@ npm run dev
 
 | Item | Status | Notes |
 |------|--------|-------|
-| ChromaDB vector store | ⬜ Pending | Step 11 |
+| ChromaDB vector store | ⏭️ **NEXT** | Step 11 |
 | `rag_engine.py` | ⬜ Pending | Step 12 |
 | `entity_extractor.py` | ⬜ Pending | Step 13 |
 | `pdf_generator.py` | ⬜ Pending | Step 14 |
@@ -1101,7 +1121,7 @@ npm run dev
 ---
 
 > **Rule:** প্রতিটা Step শেষ হলে Lamia confirm করবে → তারপর পরের Step শুরু হবে।
-> **Next:** Step 2 — `cleaned_dataset.csv` + `train_split.csv` + `test_split.csv`
+> **Next:** Step 11 — ChromaDB vector store build (Phase 3 শুরু — semantic search দিয়ে Whisper typo handle হবে)
 
 ---
 
@@ -1115,7 +1135,7 @@ npm run dev
 | §4 | চিকিৎসা অবহেলা ও পরিত্যাগ নিষিদ্ধ |
 | §5 | UNO অফিসে অভিযোগ দাখিলের পদ্ধতি |
 | §6 | UNO-এর ক্ষমতা (শুনানি ও আদেশ) |
-| §7 | শাস্তি: ১ মাস কারাদণ্ড বা ৫,০০০ টাকা জরিমানা |
+| §7 | শাস্তি: অনূর্ধ্ব ১,০০,০০০ টাকা জরিমানা, অনাদায়ে অনূর্ধ্ব ৩ মাস কারাদণ্ড |
 | §8 | জরুরি সহায়তার বিধান |
 
 ### Bangladesh Penal Code
