@@ -1,1039 +1,995 @@
-# Elder Abuse Detection & Legal Assistance — Complete Implementation Guide
+# Elder Abuse Detection & Legal Assistance — Implementation Flow
 
 > **Project Title:** A Unified AI Framework for Elder Abuse Detection & Legal Assistance
 > **Course:** CSE 499A — Undergraduate Thesis, North South University
-> **Semester:** Spring 2026 (Feb 2026 – Aug 2026)
+> **Semester:** Spring 2026
 > **Supervisor:** Dr. Sifat Momen, Professor, ECE
 > **Team:**
-> - Lamia Islam Mim (2212085042) — lamia.mim@northsouth.edu
+> - Lamia Islam Mim (2212085042)
 > - Jannatul Mawa Tahi (2212096042)
 > - Umme Sani Ananna (2221618042)
-> - Farihaa Khadija Ahmed (2221852042) — farihaa.ahmed@northsouth.edu
+> - Farihaa Khadija Ahmed (2221852042)
+
+> **Target Deadline: 2 months from start**
+> **Last Updated: 29 May 2026**
 
 ---
 
-## 1. PROJECT CONCEPT (সম্পূর্ণ ধারণা)
+## 1. PROJECT CONCEPT
 
 ### 1.1 What is This System?
 
-একটি AI-চালিত **বাংলাদেশী বৃদ্ধ নির্যাতন শনাক্তকরণ ও আইনি সহায়তা সিস্টেম**, যা:
+একটি AI-চালিত বাংলাদেশী বৃদ্ধ নির্যাতন শনাক্তকরণ ও আইনি সহায়তা সিস্টেম যা:
 
-1. **Voice Input নেয়** — গ্রামীণ বয়স্ক মানুষ বাংলায় কথা বলে তাদের সমস্যা জানায়
+1. **Voice Input নেয়** — বয়স্ক মানুষ বাংলায় / English এ / mixed ভাষায় কথা বলে সমস্যা জানায়
 2. **নির্যাতন শনাক্ত করে** — AI বুঝতে পারে কোন ধরনের নির্যাতন হয়েছে
 3. **আইনি পরামর্শ দেয়** — Parents' Maintenance Act 2013 ও Bangladesh Penal Code অনুযায়ী
 4. **Legal Document তৈরি করে** — PDF আকারে complaint draft বানিয়ে দেয়
-5. **নিকটতম সাহায্যকেন্দ্র দেখায়** — Map-এ ৪৯৫টি UNO অফিস ও হাসপাতাল
+5. **নিকটতম সাহায্যকেন্দ্র দেখায়** — Map এ UNO অফিস + Emergency buttons
 
-### 1.2 Why This System? (6টি Critical Problem Gap)
+### 1.2 Why This System? (Core Problem Gaps)
 
-| # | সমস্যা | কেন সমস্যা |
-|---|--------|------------|
-| 1 | **Literacy Barrier** | গ্রামের ৫০%+ বয়স্ক মানুষ text-based system ব্যবহার করতে পারেন না |
-| 2 | **Legal Knowledge Gap** | ৬০%+ বয়স্ক মানুষ Parents' Maintenance Act 2013 সম্পর্কে জানেন না |
+| # | সমস্যা | কেন গুরুত্বপূর্ণ |
+|---|--------|-----------------|
+| 1 | **Literacy Barrier** | গ্রামের বয়স্ক মানুষ text-based system ব্যবহার করতে পারেন না |
+| 2 | **Legal Knowledge Gap** | ৬০%+ বয়স্ক মানুষ PMA 2013 সম্পর্কে জানেন না |
 | 3 | **Trust Blind Spot** | ৪১.৮% নির্যাতনকারী নিজের সন্তান — তাই রিপোর্ট করতে ভয় পান |
 | 4 | **No Auto Triage** | কোন নির্যাতন কোন আইনে পড়ে তা automatically classify করার সিস্টেম নেই |
-| 5 | **Dialect Barrier** | Sylhet, Chittagong, Noakhali dialect NLP models বোঝে না |
-| 6 | **Geographic Gap** | কোথায় complaint করতে যাবেন তা জানেন না |
+| 5 | **Geographic Gap** | কোথায় complaint করতে যাবেন তা জানেন না |
 
-### 1.3 Who is the User?
+### 1.3 System Flow (সহজ ভাষায়)
 
-- **Primary:** বাংলাদেশের গ্রামীণ বয়স্ক মানুষ (৬০+ বছর)
-- **Secondary:** তাদের প্রতিবেশী, স্বেচ্ছাসেবী, এবং UNO অফিসের কর্মকর্তারা
+```
+User কথা বলে / টাইপ করে
+        ↓
+Whisper (Groq API) → Bangla/English text
+        ↓
+Keyword Classifier → abuse category + severity (1-5)
+        ↓
+RAG Engine (ChromaDB + Gemini Flash) → legal advice
+        ↓
+PDF Generator → complaint letter (Bangla / English / Bilingual)
+        ↓
+React UI → PDF download + UNO Map + Emergency buttons
+```
 
 ---
 
 ## 2. DATASET OVERVIEW
 
-### 2.1 Dataset Summary
-
 | বৈশিষ্ট্য | তথ্য |
 |---------|------|
 | মোট Records | ১৯৯টি |
-| মোট Columns | ১২টি (raw) → ১৯টি (cleaned, Phase 1 এ যোগ হবে) |
-| ভাষা | বাংলা + ইংরেজি (bilingual) |
+| Raw Columns | ১২টি |
+| Cleaned Columns | ১৯টি (Phase 1 এ যোগ হবে) |
+| ভাষা | বাংলা + English (bilingual) |
 | Date Range | ২০১০ – ২০২৬ |
-| Data Source Types | Secondary (News), Secondary (Interview), Primary (Interview) |
 
-### 2.2 Data Sources
+**Data Sources:**
+- Secondary (News): jugantor.com, prothomalo.com, thedailystar.net ইত্যাদি
+- Secondary (Interview): Shomoy TV, ATN News, Channel I ইত্যাদি
+- Primary (Interview): Field Work — Narayanganj, Comilla, Dhaka, Pabna, Lakshmipur, Chittagong, Madaripur, Noakhali, Faridpur, Mymensingh, Kushtia, Rajshahi, Sylhet ইত্যাদি (March–April 2026)
 
-| Type | Source | উদাহরণ |
-|------|--------|---------|
-| Secondary (News) | jugantor.com, prothomalo.com, jagonews24.com, bd-pratidin.com, thedailystar.net, bangla.bdnews24.com, ittefaq.com.bd, banglatribune.com | অনলাইন সংবাদপত্র scraping |
-| Secondary (Interview) | Shomoy TV, ATN News, Channel I, Bhorer Kagoj Live, Rtv News, DBC News, Kaler Kantho, Kalbela News, Channel24, NEWS24 | YouTube থেকে interview |
-| Primary (Interview) | Field Work — Narayanganj, Comilla, Dhaka, Pabna, Lakshmipur, Chittagong, Madaripur, Noakhali, Faridpur, Mymensingh, Kushtia, Rajshahi, Sylhet, Satkhira, Gaibandha, Bandarban, Tangail, Chandpur, Meherpur | সরাসরি Field Interview (March–April 2026) |
+**Abuse Categories (Normalized):**
 
-### 2.3 Raw Dataset Columns (12টি)
+| Category | Severity | Legal Section |
+|----------|----------|---------------|
+| Physical Abuse | 4 | PMA §3; BPC §323 |
+| Abandonment | 3 | PMA §3 & §4 |
+| Neglect | 2 | PMA §4 |
+| Financial Exploitation | 2 | BPC §406, §420 |
+| Verbal Abuse | 1 | BPC §506 |
+| Murder | 5 | BPC §302 |
+| Sexual Abuse | 4 | BPC §375 |
 
-```
-Data Type | Date | Source | Location | Abuse Relation | Abuse Category |
-Gender | Name | Age | Scenerio(Bangla) | Scenerio(English) | URL / Source type
-```
-
-### 2.4 Abuse Categories (Raw → Normalized)
-
-Phase 1 এ normalize করতে হবে:
-
-| Raw Category | Normalized Category | Severity (1-5) | Legal Section |
-|-------------|-------------------|----------------|---------------|
-| Physical, Physcial, Physical Abuse | **Physical Abuse** | 4 | PMA §3; BPC §323 |
-| Abandonment | **Abandonment** | 3 | PMA §3 & §4 |
-| Neglect, Neglect  | **Neglect** | 2 | PMA §4 |
-| Financial Exploitation | **Financial Exploitation** | 2 | PMA §3; BPC §420/§406 |
-| Murder | **Murder** | 5 | BPC §302/§304 |
-| verbally, Verbally | **Verbal Abuse** | 1 | PMA §3; BPC §506 |
-| Financial Exploitation and physical | **Mixed - Financial & Physical** | 4 | PMA §3; BPC §323/§420 |
-| Neglect and Abandonment | **Mixed - Neglect & Abandonment** | 3 | PMA §4 |
-| Financial Exploitation and Abandonment | **Mixed - Financial & Abandonment** | 3 | PMA §3 & §4 |
-| Abandonment and physical | **Mixed - Physical & Abandonment** | 4 | PMA §3 & §4; BPC §323 |
-| Physical and neglect | **Mixed - Physical & Neglect** | 3 | PMA §3 & §4 |
-| Financial Exploitation and neglect | **Mixed - Financial & Neglect** | 2 | PMA §3 & §4 |
-| Financial Exploitation and Murder | **Mixed - Financial & Murder** | 5 | BPC §302/§420 |
-
-### 2.5 Key Findings from Dataset
-
-- **সবচেয়ে বেশি নির্যাতনকারী:** Son (ছেলে) — ২১.৫%, Children (সন্তানরা) — ৪১.৮% (Trust Blind Spot)
-- **সবচেয়ে বেশি ক্যাটাগরি:** Abandonment — ২৪.১%, Physical — ~২০%
-- **Peak Vulnerability Age:** ৭০ বছর
-- **Primary Victims:** Female বেশি (বিশেষত বিধবা মহিলারা)
-- **Geographic Spread:** ঢাকা, চট্টগ্রাম, সিলেট, রাজশাহী, বরিশাল, খুলনা সহ সারা বাংলাদেশ
+**Key Dataset Findings:**
+- সবচেয়ে বেশি abuser: Son (21.5%)
+- পরিবারের মোট: **41.8%** → "Trust Blind Spot"
+- Peak vulnerable age: 70 বছর
+- সবচেয়ে বেশি category: Abandonment (24.1%)
 
 ---
 
-## 3. COMPLETE TECHNOLOGY STACK
+## 3. TECHNOLOGY STACK (সম্পূর্ণ Free)
 
-### 3.1 Backend
+| Component | Tool | Cost |
+|-----------|------|------|
+| Speech-to-Text | Groq Whisper API (`whisper-large-v3-turbo`) | Free |
+| LLM / Legal AI | Google Gemini 1.5 Flash | Free |
+| Embeddings | HuggingFace `paraphrase-multilingual-MiniLM-L12-v2` | Free (local) |
+| Vector DB | ChromaDB (local folder) | Free |
+| Backend | FastAPI + uvicorn | Free |
+| Frontend | React + Vite + Tailwind CSS | Free |
+| Map | Leaflet.js + OpenStreetMap | Free |
+| PDF | fpdf2 + NotoSansBengali font | Free |
+| Database | Firebase Firestore (Spark plan) | Free |
+| Geocoding | Nominatim (OpenStreetMap) | Free |
+| Deploy | Vercel (frontend) + Render (backend) | Free |
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| API Framework | **FastAPI** | REST API server |
-| Speech-to-Text | **OpenAI Whisper Large-v3** | Bangla audio → text transcription |
-| Audio Processing | **librosa + pydub + ffmpeg** | Noise gate, normalization, format conversion |
-| AI/LLM | **GPT-4o-mini** (via OpenAI API) | Entity extraction, legal reasoning |
-| RAG Framework | **LangChain** | Retrieval-Augmented Generation pipeline |
-| Vector Database | **ChromaDB** or **FAISS** | Vectorized legal knowledge base |
-| Embeddings | **OpenAI text-embedding-3-small** | Text → vector conversion |
-| PDF Generation | **ReportLab** or **fpdf2** | Legal draft PDF creation |
-| Server | **uvicorn** | ASGI server |
-
-### 3.2 Frontend
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| UI Framework | **React (Vite)** | Mobile-responsive web app |
-| Map | **Leaflet.js** | UNO & hospital navigation |
-| Geospatial | **Haversine Formula** | Distance calculation to nearest UNO |
-| Styling | **Tailwind CSS** | Senior-friendly UI design |
-
-### 3.3 Data & Storage
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| Cloud DB | **Firebase Firestore** | Offline-first case storage |
-| File Storage | **Firebase Storage** | Audio files, PDFs |
-| Security | **AES-256** | Encrypted sensitive data |
-| Environment | **.env** | API keys (OpenAI, Firebase) |
-
-### 3.4 Data Engineering
-
-| Tool | Purpose |
-|------|---------|
-| **pandas** | Dataset cleaning, EDA |
-| **numpy** | Numerical operations |
-| **matplotlib / seaborn** | Data visualization |
-| **scikit-learn** | Train/test split, evaluation metrics |
-| **newspaper3k** | News scraping |
-
----
-
-## 4. SYSTEM ARCHITECTURE (End-to-End Flow)
-
+**API Keys দরকার:**
 ```
-[User speaks in Bangla]
-         │
-         ▼
-[React Frontend — Voice Recorder]
-         │  (WebM/Opus audio upload)
-         ▼
-[FastAPI Backend — /transcribe endpoint]
-         │
-         ├──► [AudioPreprocessor]
-         │        • Format → 16kHz mono WAV
-         │        • Noise Gate (2% peak RMS)
-         │        • Peak Normalization (-3.0 dBFS)
-         │
-         ├──► [WhisperService — Large-v3]
-         │        • Bangla transcription
-         │        • Dialect prompts (Sylhet/Chittagong/Noakhali/Standard)
-         │        • Returns: text, confidence, segments, duration
-         │
-         ├──► [KeywordClassifier — Phase 2 / Rule-based]
-         │        • Fast keyword matching
-         │        • Abuse category + severity + legal section
-         │
-         ├──► [RAG Legal Triage Engine — Phase 3]
-         │        • LangChain + ChromaDB
-         │        • GPT-4o-mini with PMA 2013 context
-         │        • Entity extraction (Name, Age, Location, Abuser)
-         │        • Civil vs Criminal classification
-         │        • Section-wise legal breakdown
-         │
-         ├──► [PDF Generator — Phase 3]
-         │        • Formal complaint draft
-         │        • Section-wise legal citations
-         │        • Ready-to-file format
-         │
-         └──► [Geospatial Layer — Phase 4]
-                  • User GPS coordinates
-                  • Haversine distance to 495 UNOs
-                  • Leaflet.js map rendering
-                  • Nearest hospital + UNO office
-         │
-         ▼
-[React Frontend — Results Display]
-         • Transcript shown
-         • Abuse category + severity badge
-         • Legal advice (Bangla)
-         • PDF download button
-         • Map with nearest UNO
+GROQ_API_KEY       → console.groq.com (free signup)
+GOOGLE_API_KEY     → aistudio.google.com (free signup)
+FIREBASE_*         → console.firebase.google.com (free Spark plan)
 ```
 
 ---
 
-## 5. FOLDER STRUCTURE (Complete Target Structure)
+## 4. TEAM ASSIGNMENT (কে কী করবে)
+
+> **বাস্তব সত্য:** Code সব Lamia করবে। বাকি ৩ জন অন্য গুরুত্বপূর্ণ কাজ করবে।
+> **প্রতি সপ্তাহে Sir কে update দেখাবে — প্রত্যেকে তাদের নিজস্ব অংশ।**
+
+| Member | দায়িত্ব | Deliverable |
+|--------|---------|------------|
+| **Lamia Islam Mim** | সব code, backend, AI pipeline, deployment | Running system + demo |
+| **Jannatul Mawa Tahi** | Dataset EDA, charts, notebook | Jupyter notebook (EDA) |
+| **Umme Sani Ananna** | Literature review, thesis writing (Related Work, Methodology chapter) | Word document |
+| **Farihaa Khadija Ahmed** | UNO data collection (lgd.gov.bd), user testing (5 জন বয়স্ক), feedback | Excel + test report |
+
+---
+
+## 5. 2-MONTH WEEKLY PLAN
+
+**Start Date:** এখন (Week 1)
+**End Date:** 8 সপ্তাহ পরে
 
 ```
-elder-abuse-ai/
-│
-├── docs/                              ← Documentation
-│   └── implementation-flow.md        ← এই ফাইল
-│
-├── data/                              ← Phase 1: Dataset & Knowledge Base
-│   ├── Elder_abuse_Dataset.csv        ← Raw dataset (199 records, 12 columns)
-│   ├── elder_abuse_cleaned.csv        ← Cleaned dataset (199 records, 19 columns)
-│   ├── keyword_dictionary.json        ← Bangla+English abuse keyword dict
-│   ├── act_knowledge_base.json        ← Parents' Maintenance Act 2013 full text
-│   ├── train_split.csv                ← Train set (156 rows, 80%)
-│   └── test_split.csv                 ← Test set (43 rows, 20%)
-│
+WEEK    PHASE     LAMIA এর কাজ                    TEAM UPDATE
+────────────────────────────────────────────────────────────────
+Week 1  Phase 1   Dataset clean + EDA              Tahi: EDA notebook start
+                  keyword_dictionary.json           Ananna: Related Work draft
+                  act_knowledge_base.json
+
+Week 2  Phase 1→2 knowledge base শেষ              Tahi: Charts complete
+                  FastAPI setup + /health           Ananna: 5 papers summarize
+                  Groq Whisper integration          Farihaa: UNO data (20 entries)
+
+Week 3  Phase 2   /transcribe endpoint working      Tahi: EDA notebook final
+                  AudioPreprocessor (ffmpeg)        Ananna: Methodology chapter
+                  KeywordClassifier complete         Farihaa: UNO data (40 entries)
+
+Week 4  Phase 2→3 Phase 2 test complete             Tahi: Severity analysis chart
+                  ChromaDB vector store build        Ananna: System Design section
+                  RAG Engine start                  Farihaa: UNO data (64 entries)
+
+Week 5  Phase 3   RAG + Gemini → legal advice      Tahi: Trust Blind Spot analysis
+                  Entity extraction (basic)          Ananna: Intro chapter draft
+                  PDF Generator (1 page)             Farihaa: 5 user test (observe)
+
+Week 6  Phase 3→4 Phase 3 test complete             Tahi: EDA final charts export
+                  React app setup (Vite)             Ananna: Abstract + Conclusion draft
+                  VoiceRecorder component            Farihaa: User feedback form fill
+
+Week 7  Phase 4   MapView (Leaflet.js)              Tahi: Final notebook clean
+                  Firebase Firestore                 Ananna: Thesis draft complete
+                  Full pipeline connect              Farihaa: Test report write
+
+Week 8  Phase 5   Bug fix + End-to-end test         ALL: Presentation slides
+                  Vercel + Render deploy             ALL: Final demo rehearse
+                  Thesis polish
+────────────────────────────────────────────────────────────────
+```
+
+---
+
+## 6. PHASE-BY-PHASE IMPLEMENTATION
+
+---
+
+### PHASE 1 — Dataset Preparation
+**Timeline:** Week 1–2
+**Owner:** Lamia (code) + Tahi (EDA notebook)
+
+#### কী করতে হবে:
+
+```
+1. data/ folder বানাও
+2. Elder_abuse_Dataset.csv রাখো সেখানে
+3. notebooks/01_eda.ipynb বানাও
+4. Dataset clean করো (7টি নতুন column যোগ):
+   - Abuse_Category_Normalized  (typo fix, standard name)
+   - Abuse_Relation_Normalized  (Son/Daughter/Spouse...)
+   - Age_Numeric                (string → int, "Unknown" → NaN)
+   - Date_Parsed                (string → datetime)
+   - Year                       (date থেকে extract)
+   - Trust_Blind_Spot           (1 = family member abuser, 0 = other)
+   - Severity_Score             (1-5 based on category)
+5. Train/test split: 80/20, stratified by category, random_state=42
+6. keyword_dictionary.json তৈরি (Bangla + English keywords)
+7. act_knowledge_base.json তৈরি (PMA 2013 + BPC sections)
+```
+
+#### Folder Structure (Phase 1):
+```
+elder-abuse/
+├── data/
+│   ├── Elder_abuse_Dataset.csv       ← raw dataset
+│   ├── cleaned_dataset.csv           ← Phase 1 output
+│   ├── train_split.csv               ← 80% (156 cases)
+│   └── test_split.csv                ← 20% (43 cases)
 ├── notebooks/
-│   └── phase1_eda.py                  ← Phase 1 EDA & data engineering script
-│
-├── backend/                           ← Phase 2+3: FastAPI Backend
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py                    ← FastAPI entry point
-│   │   ├── whisper_service.py         ← Whisper speech-to-text
-│   │   ├── preprocessor.py            ← Audio preprocessing
-│   │   ├── keyword_classifier.py      ← Rule-based keyword classifier
-│   │   ├── rag_engine.py              ← Phase 3: LangChain + GPT-4o-mini RAG
-│   │   ├── entity_extractor.py        ← Phase 3: GPT-4o-mini entity extraction
-│   │   └── pdf_generator.py           ← Phase 3: Legal draft PDF generation
-│   ├── vector_store/                  ← Phase 3: ChromaDB vector database
-│   │   └── (auto-generated by ChromaDB)
-│   ├── phase1_outputs/
-│   │   └── keyword_dictionary.json    ← Phase 1 keyword dict (backend copy)
-│   └── tests/
-│       ├── test_whisper.py
-│       ├── test_rag.py
-│       └── test_pdf.py
-│
-├── frontend/                          ← Phase 4: React Frontend
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── VoiceRecorder.jsx      ← Audio recording component
-│   │   │   ├── TranscriptDisplay.jsx  ← Show transcript
-│   │   │   ├── LegalAdvice.jsx        ← Legal triage results
-│   │   │   ├── MapView.jsx            ← Leaflet.js UNO map
-│   │   │   └── PDFDownload.jsx        ← PDF download button
-│   │   ├── pages/
-│   │   │   ├── Home.jsx
-│   │   │   └── Report.jsx
-│   │   └── App.jsx
-│   ├── public/
-│   └── package.json
-│
-├── geospatial/                        ← Phase 4: UNO Location Data
-│   └── uno_locations.json             ← 495 UNO GPS coordinates
-│
-├── venv/                              ← Python virtual environment (gitignored)
-├── .env                               ← API keys (gitignored)
-├── .gitignore
-├── phase2_requirements.txt            ← Python dependencies
-└── README.md
+│   └── 01_eda.ipynb                  ← EDA + charts
+└── backend/
+    └── phase1_outputs/
+        ├── keyword_dictionary.json   ← classifier এর জন্য
+        └── act_knowledge_base.json   ← RAG এর জন্য
 ```
 
----
-
-## 6. PHASE-BY-PHASE IMPLEMENTATION FLOW
-
----
-
-### ✅ PHASE 1 — Data Engineering & EDA
-**Timeline:** February – March 2026 (COMPLETED previously, needs to be re-done)
-**Goal:** Dataset clean করা, keyword dictionary তৈরি, EDA চালানো
-
-#### 6.1.1 What to Build
-
-**File:** `notebooks/phase1_eda.py`
-
-**Step 1: Load & Clean Dataset**
-```python
-# Input: data/Elder_abuse_Dataset.csv (199 rows, 12 columns)
-# Output: data/elder_abuse_cleaned.csv (199 rows, 19 columns)
-
-# 5টি নতুন column যোগ করতে হবে:
-# 1. Abuse Category Normalized   — raw category → standard category
-# 2. Abuse Relation Normalized   — raw relation → standard relation
-# 3. Age Numeric                 — string age → integer
-# 4. Date Parsed                 — string date → datetime
-# 5. Year                        — datetime → year (integer)
-# 6. Trust Blind Spot            — 1 if family member abuser, else 0
-# 7. Severity Score              — 1-5 based on abuse category
-```
-
-**Step 2: Category Normalization**
-```python
-# Normalization Map:
-category_map = {
-    "Physical": "Physical Abuse",
-    "Physcial": "Physical Abuse",           # typo fix
-    "Physical Abuse": "Physical Abuse",
-    "Neglect": "Neglect",
-    "Neglect ": "Neglect",                  # trailing space fix
-    "Abandonment": "Abandonment",
-    "Financial Exploitation": "Financial Exploitation",
-    "Murder": "Murder",
-    "verbally": "Verbal Abuse",
-    "Verbally ": "Verbal Abuse",
-    "Financial Exploitation and physical": "Mixed - Financial & Physical",
-    "Neglect and Abandonment": "Mixed - Neglect & Abandonment",
-    "Financial Exploitation and Abandonment": "Mixed - Financial & Abandonment",
-    "Abandonment and physical": "Mixed - Physical & Abandonment",
-    "Physical and neglect": "Mixed - Physical & Neglect",
-    "Financial Exploitation and neglect": "Mixed - Financial & Neglect",
-    "Financial Exploitation and Murder": "Mixed - Financial & Murder",
-    "Financial Exploitation, physical and abandonment": "Mixed - Financial & Physical & Abandonment",
-}
-```
-
-**Step 3: Severity Score (1–5)**
-```python
-severity_map = {
-    "Murder": 5,
-    "Mixed - Financial & Murder": 5,
-    "Physical Abuse": 4,
-    "Mixed - Financial & Physical": 4,
-    "Mixed - Physical & Abandonment": 4,
-    "Mixed - Financial & Physical & Abandonment": 4,
-    "Abandonment": 3,
-    "Mixed - Physical & Neglect": 3,
-    "Mixed - Neglect & Abandonment": 3,
-    "Mixed - Financial & Abandonment": 3,
-    "Financial Exploitation": 2,
-    "Neglect": 2,
-    "Mixed - Financial & Neglect": 2,
-    "Verbal Abuse": 1,
-}
-```
-
-**Step 4: Trust Blind Spot Flag**
-```python
-# Family members = Trust Blind Spot = 1
-family_relations = [
-    "Son", "Daughter", "Children", "Son and daughter-in-law",
-    "Daughter-in-law", "Grand son", "Grandson", "Nephew and his wife",
-    "Wife and Children", "Son, daughter-in-law and grand son",
-    "Younger Brother", "Husband and daughter-in-law", "Family"
-]
-# যদি Abuse Relation এই list এ থাকে → Trust Blind Spot = 1
-```
-
-**Step 5: Stratified Train/Test Split**
-```python
-# 80/20 split, stratified by normalized category, seed=42
-# Output: data/train_split.csv (156 rows)
-# Output: data/test_split.csv (43 rows)
-```
-
-**Step 6: Keyword Dictionary তৈরি**
+#### keyword_dictionary.json structure:
 ```json
-// Output: data/keyword_dictionary.json
-// Structure:
 {
-  "Physical Abuse": {
-    "bangla": ["নির্যাতন", "মারধর", "মারপিট", "আঘাত", "পেটানো", "চড়", "লাথি"],
-    "english": ["beat", "hit", "slap", "torture", "assault", "physical abuse"],
-    "severity": 4,
-    "legal_section": "Section 3 — PMA 2013; BPC §323"
+  "physical": {
+    "bangla": ["মারধর", "আঘাত", "চড়", "লাথি", "মেরেছে"],
+    "english": ["beat", "hit", "slap", "assault", "punch", "injury"],
+    "mixed_forms": ["beat করেছে", "hit করেছে"]
   },
-  // ... অন্যান্য categories
+  "financial": {
+    "bangla": ["সম্পত্তি", "টাকা", "জমি", "দলিল", "প্রতারণা"],
+    "english": ["property", "money", "land", "fraud", "inheritance"],
+    "mixed_forms": ["property নিয়েছে", "account থেকে টাকা নিয়েছে"]
+  },
+  "abandonment": {
+    "bangla": ["বের করে দিয়েছে", "পরিত্যাগ", "রাস্তায় ফেলে"],
+    "english": ["evict", "abandoned", "thrown out", "kicked out"],
+    "mixed_forms": ["evict করে দিয়েছে"]
+  },
+  "verbal": {
+    "bangla": ["গালি", "অপমান", "হুমকি", "ভয় দেখানো"],
+    "english": ["insult", "threaten", "threat", "verbal abuse"],
+    "mixed_forms": ["threaten করেছে"]
+  },
+  "neglect": {
+    "bangla": ["খাবার দেয় না", "ওষুধ দেয় না", "অবহেলা"],
+    "english": ["not feeding", "no food", "no medicine", "neglect"],
+    "mixed_forms": ["medicine দেয় না"]
+  }
 }
 ```
 
-**Step 7: Legal Knowledge Base তৈরি**
+#### act_knowledge_base.json structure:
 ```json
-// Output: data/act_knowledge_base.json
-// Parents' Maintenance Act 2013 এর 12টি section সম্পূর্ণ text
-// BPC relevant sections (§302, §323, §406, §420, §506)
+{
+  "sec3": {
+    "section": "PMA 2013 — Section 3",
+    "text": "প্রতিটি সন্তান তাদের পিতামাতার ভরণপোষণ করতে বাধ্য..."
+  },
+  "sec4": {
+    "section": "PMA 2013 — Section 4",
+    "text": "চিকিৎসা অবহেলা ও পরিত্যাগ নিষিদ্ধ..."
+  },
+  "sec5": {
+    "section": "PMA 2013 — Section 5",
+    "text": "UNO অফিসে অভিযোগ দাখিল করার পদ্ধতি..."
+  },
+  "sec6": {
+    "section": "PMA 2013 — Section 6",
+    "text": "UNO-এর ক্ষমতা — শুনানি ও আদেশ..."
+  },
+  "sec7": {
+    "section": "PMA 2013 — Section 7",
+    "text": "শাস্তি: ১ মাস কারাদণ্ড বা ৫,০০০ টাকা জরিমানা..."
+  },
+  "bpc_323": {
+    "section": "BPC §323 — Voluntarily Causing Hurt",
+    "text": "স্বেচ্ছায় আঘাত করার শাস্তি..."
+  },
+  "bpc_420": {
+    "section": "BPC §420 — Cheating & Fraud",
+    "text": "প্রতারণা ও সম্পত্তি আত্মসাতের শাস্তি..."
+  },
+  "bpc_506": {
+    "section": "BPC §506 — Criminal Intimidation",
+    "text": "ভয় দেখানোর শাস্তি..."
+  }
+}
 ```
 
-**Step 8: EDA Visualizations**
-- Abuse category distribution
-- Perpetrator relation distribution
-- Geographic heatmap (Location-wise)
-- Age distribution of victims
-- Year-wise trend
-- Trust Blind Spot analysis
-- Severity distribution
+#### Phase 1 Deliverables:
+```
+□ data/cleaned_dataset.csv
+□ data/train_split.csv + test_split.csv
+□ notebooks/01_eda.ipynb (EDA charts)
+□ backend/phase1_outputs/keyword_dictionary.json
+□ backend/phase1_outputs/act_knowledge_base.json
+```
 
-#### 6.1.2 Phase 1 Deliverables
-- [ ] `data/elder_abuse_cleaned.csv` (199 rows, 19 columns)
-- [ ] `data/keyword_dictionary.json`
-- [ ] `data/act_knowledge_base.json`
-- [ ] `data/train_split.csv` (156 rows)
-- [ ] `data/test_split.csv` (43 rows)
-- [ ] `notebooks/phase1_eda.py`
+#### Common Errors (Phase 1):
+```python
+# Date parse error → inconsistent format
+df['Date_Parsed'] = pd.to_datetime(df['Date'], errors='coerce', dayfirst=True)
 
-#### 6.1.3 Phase 1 Success Criteria
-- ১০০% category normalization accuracy
-- ০ null values in critical columns (Category, Location, Relation)
-- keyword_dictionary covers all 7 abuse types (Bangla + English)
-- act_knowledge_base covers all 12 legal sections
+# Age "Unknown" → NaN
+df['Age_Numeric'] = pd.to_numeric(df['Age'], errors='coerce')
+
+# Category typo fix
+df['Abuse Category'] = df['Abuse Category'].str.strip()
+category_map = {
+    'Physcial': 'Physical Abuse',
+    'Physical': 'Physical Abuse',
+    'Neglect ': 'Neglect',
+}
+df['Abuse_Category_Normalized'] = df['Abuse Category'].replace(category_map)
+```
 
 ---
 
-### ✅ PHASE 2 — Speech Processing Backend
-**Timeline:** March – April 2026 (COMPLETED previously, needs to be re-done)
-**Goal:** FastAPI backend তৈরি, Whisper দিয়ে Bangla speech-to-text, audio preprocessing
+### PHASE 2 — Speech Backend
+**Timeline:** Week 2–3
+**Owner:** Lamia
 
-#### 6.2.1 What to Build
+#### কী করতে হবে:
 
-**Backend Dependencies (`phase2_requirements.txt`):**
+```
+1. backend/app/ folder structure তৈরি
+2. Virtual environment + requirements install
+3. preprocessor.py — audio → 16kHz WAV (ffmpeg)
+4. whisper_service.py — Groq API দিয়ে speech-to-text
+5. keyword_classifier.py — keyword matching + severity
+6. main.py — FastAPI (3 endpoints)
+7. Test: /health, /transcribe, /transcribe/text
+```
+
+#### Folder Structure (Phase 2):
+```
+backend/
+├── app/
+│   ├── __init__.py
+│   ├── main.py               ← FastAPI app
+│   ├── preprocessor.py       ← audio → WAV
+│   ├── whisper_service.py    ← Groq Whisper
+│   └── keyword_classifier.py ← category + severity
+├── phase1_outputs/
+│   ├── keyword_dictionary.json
+│   └── act_knowledge_base.json
+├── requirements.txt
+├── .env                      ← API keys (gitignored)
+└── .gitignore
+```
+
+#### requirements.txt:
 ```
 fastapi==0.115.0
 uvicorn[standard]==0.30.0
 python-multipart==0.0.9
-openai-whisper==20231117
-librosa==0.10.2
-soundfile==0.12.1
 pydub==0.25.1
-numpy==1.26.4
-scipy==1.13.0
+groq==0.9.0
+google-generativeai==0.7.0
+langchain-community==0.2.0
+chromadb==0.5.0
+sentence-transformers==3.0.0
+fpdf2==2.8.0
+python-dotenv==1.0.0
 pytest==8.2.2
 httpx==0.27.0
 ```
 
-**File 1: `backend/app/main.py`**
+#### whisper_service.py (Groq API):
 ```python
-# FastAPI app with 4 endpoints:
-# POST /transcribe         — Audio file → transcript + classification
-# POST /transcribe/text    — Direct text → classification (testing)
-# GET  /health             — Service health check
-# GET  /models             — Available Whisper models list
+from groq import Groq
+import os
 
-# Startup: Initialize WhisperService, AudioPreprocessor, KeywordClassifier
-# CORS: localhost:5173 (Vite), localhost:3000 (CRA)
-```
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-**Processing Pipeline (`/transcribe` endpoint):**
-```
-Audio Upload
-    │
-    ▼
-AudioPreprocessor.process()
-    ├── Format → 16kHz mono WAV (pydub + ffmpeg)
-    ├── Noise Gate (threshold = 2% of peak RMS)
-    └── Peak Normalization (-3.0 dBFS)
-    │
-    ▼
-WhisperService.transcribe()
-    ├── Language: "bn" (Bangla)
-    ├── Dialect hints → initial_prompt
-    ├── beam_size=5, temperature=0.0
-    └── Returns: text, confidence, segments, duration
-    │
-    ▼
-KeywordClassifier.classify()
-    ├── Keyword matching (Bangla + English)
-    ├── Abuse category detection
-    ├── Severity score
-    ├── Legal section reference
-    └── Entity extraction (basic regex)
-    │
-    ▼
-JSON Response
-```
+def transcribe(audio_path: str) -> dict:
+    with open(audio_path, "rb") as f:
+        result = client.audio.transcriptions.create(
+            file=f,
+            model="whisper-large-v3-turbo",
+            response_format="verbose_json"
+            # language বলছি না → auto-detect করবে (Bangla/English/Mixed)
+        )
+    text = result.text
+    # Detect language mode
+    has_bangla  = any('ঀ' <= ch <= '৿' for ch in text)
+    has_english = any('a' <= ch.lower() <= 'z' for ch in text)
+    if has_bangla and has_english:
+        lang_mode = "mixed"
+    elif has_bangla:
+        lang_mode = "bangla"
+    else:
+        lang_mode = "english"
 
-**File 2: `backend/app/whisper_service.py`**
-```python
-class WhisperService:
-    # Lazy loading — first request এ model load হয়
-    # model_size: "large-v3" (recommended), "medium" (low RAM)
-    # Dialect prompts for Sylhet, Chittagong, Noakhali, Standard Bangla
-    # compute_wer() method for evaluation
-```
-
-**File 3: `backend/app/preprocessor.py`**
-```python
-class AudioPreprocessor:
-    # Supported formats: webm, ogg, mp3, m4a, flac, wav
-    # Target: 16kHz, mono, PCM_16 WAV
-    # Noise gate threshold: 2% of peak RMS
-    # Peak target: -3.0 dBFS
-```
-
-**File 4: `backend/app/keyword_classifier.py`**
-```python
-class KeywordClassifier:
-    # Loads from: backend/phase1_outputs/keyword_dictionary.json
-    # classify(text) → category, severity, legal_section, matched_terms
-    # _extract_entities(text) → victim_name, victim_age, location, abuser_relation
-    # _civil_or_criminal(category, severity) → "Civil" or "Criminal"
-    # _recommend_action(category, severity) → Bangla action string
-```
-
-**API Response Structure:**
-```json
-{
-  "success": true,
-  "transcript": {
-    "text": "আমার ছেলে আমাকে বাড়ি থেকে বের করে দিয়েছে...",
-    "language": "bn",
-    "confidence": 0.87,
-    "segments": [...],
-    "duration_s": 12.4
-  },
-  "audio_stats": {
-    "original_duration_s": 12.4,
-    "sample_rate": 16000,
-    "noise_gate_threshold": 0.002
-  },
-  "classification": {
-    "category": "Abandonment",
-    "matched_terms": ["বের করে", "পরিত্যাগ"],
-    "legal_section": "Section 3 & 4 — PMA 2013",
-    "severity": 3,
-    "civil_or_criminal": "Civil",
-    "recommended_action": "Section 5, PMA 2013 অনুযায়ী UNO অফিসে ভরণপোষণ অভিযোগ দাখিল করুন।",
-    "entities": {
-      "victim_name": null,
-      "victim_age": null,
-      "location": null,
-      "abuser_relation": "Son"
+    return {
+        "text":          text,
+        "language_mode": lang_mode,
+        "confidence":    getattr(result, 'confidence', 0.9)
     }
-  },
-  "processing_time_s": 3.21,
-  "model": "large-v3"
-}
 ```
 
-**Run Command:**
-```bash
-cd elder-abuse-ai/backend
-uvicorn app.main:app --reload --port 8000
+#### keyword_classifier.py:
+```python
+import json
+
+class KeywordClassifier:
+    def __init__(self, dict_path: str):
+        with open(dict_path, encoding="utf-8") as f:
+            self.keywords = json.load(f)
+
+    def classify(self, text: str) -> dict:
+        text_lower = text.lower()
+        scores = {}
+        for category, kw_group in self.keywords.items():
+            all_kw = (kw_group.get("bangla", []) +
+                      kw_group.get("english", []) +
+                      kw_group.get("mixed_forms", []))
+            scores[category] = sum(1 for kw in all_kw if kw.lower() in text_lower)
+
+        if not any(scores.values()):
+            return {"category": "unknown", "severity": 1, "confidence": 0.0}
+
+        top = max(scores, key=scores.get)
+        severity_map = {
+            "physical": 4, "financial": 2, "abandonment": 3,
+            "verbal": 1, "neglect": 2, "sexual": 4, "murder": 5
+        }
+        total = sum(scores.values())
+        return {
+            "category": top,
+            "severity": severity_map.get(top, 2),
+            "confidence": round(scores[top] / total, 2) if total > 0 else 0.0,
+            "all_scores": scores
+        }
 ```
 
-#### 6.2.2 Phase 2 Deliverables
-- [ ] `backend/app/__init__.py`
-- [ ] `backend/app/main.py`
-- [ ] `backend/app/whisper_service.py`
-- [ ] `backend/app/preprocessor.py`
-- [ ] `backend/app/keyword_classifier.py`
-- [ ] `backend/phase1_outputs/keyword_dictionary.json` (Phase 1 থেকে copy)
-- [ ] `phase2_requirements.txt`
-- [ ] `.gitignore`
-- [ ] `.env` (OPENAI_API_KEY)
+#### main.py (FastAPI — Phase 2):
+```python
+from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import tempfile, os, shutil
+from .preprocessor import preprocess_audio
+from .whisper_service import transcribe
+from .keyword_classifier import KeywordClassifier
 
-#### 6.2.3 Phase 2 Success Criteria
-- WER < 15% for regional Bangla dialects
-- 90%+ success in noisy audio conditions
-- API response time < 5 seconds
+app = FastAPI(title="Elder Abuse AI API")
+app.add_middleware(CORSMiddleware, allow_origins=["*"],
+                   allow_methods=["*"], allow_headers=["*"])
+
+classifier = KeywordClassifier("phase1_outputs/keyword_dictionary.json")
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+@app.post("/transcribe")
+async def transcribe_audio(audio: UploadFile = File(...)):
+    with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as tmp:
+        shutil.copyfileobj(audio.file, tmp)
+        tmp_path = tmp.name
+    try:
+        wav_path   = preprocess_audio(tmp_path)
+        whisper    = transcribe(wav_path)
+        classify   = classifier.classify(whisper["text"])
+        return {"transcript": whisper, "classification": classify}
+    finally:
+        os.unlink(tmp_path)
+
+class TextRequest(BaseModel):
+    text: str
+
+@app.post("/transcribe/text")
+def transcribe_text(req: TextRequest):
+    classify = classifier.classify(req.text)
+    return {"transcript": {"text": req.text}, "classification": classify}
+```
+
+#### Phase 2 Deliverables:
+```
+□ backend/app/__init__.py
+□ backend/app/main.py
+□ backend/app/preprocessor.py
+□ backend/app/whisper_service.py
+□ backend/app/keyword_classifier.py
+□ backend/requirements.txt
+□ backend/.env (gitignored)
+□ backend/.gitignore
+□ Test: curl localhost:8000/health → {"status": "ok"}
+□ Test: audio file upload → transcript + category
+```
+
+#### Common Errors (Phase 2):
+```
+Error: "ffmpeg not found"
+Fix:   winget install --id Gyan.FFmpeg
+       তারপর নতুন terminal খোলো
+
+Error: CORS error (frontend থেকে call করলে)
+Fix:   CORSMiddleware এ allow_origins=["*"] যোগ করো
+
+Error: "groq module not found"
+Fix:   pip install groq
+```
 
 ---
 
-### 🔲 PHASE 3 — AI Core: RAG Legal Triage Engine
-**Timeline:** April – June 2026 (NEXT PHASE)
-**Goal:** GPT-4o-mini + LangChain + ChromaDB দিয়ে intelligent legal triage এবং PDF generation
+### PHASE 3 — AI Core: RAG + PDF
+**Timeline:** Week 4–5
+**Owner:** Lamia
 
-#### 6.3.1 What to Build
+#### কী করতে হবে:
 
-**New Dependencies to add:**
 ```
-langchain==0.1.x
-langchain-openai==0.0.x
-langchain-community==0.0.x
-chromadb==0.4.x
-openai==1.x.x
-reportlab==4.x.x   # or fpdf2
-tiktoken
+1. ChromaDB vector store build করো (act_knowledge_base.json থেকে)
+2. rag_engine.py — ChromaDB + Gemini Flash → legal advice
+3. pdf_generator.py — fpdf2 দিয়ে complaint PDF
+4. entity_extractor.py — basic regex (name, age, location)
+5. main.py update করো (Phase 3 endpoints যোগ)
+6. Test: RAG accuracy on test_split.csv
 ```
 
-**File 5: `backend/app/rag_engine.py`**
-
+#### rag_engine.py:
 ```python
-# RAG Pipeline Architecture:
-# 1. Vector Database Setup (one-time)
-#    - act_knowledge_base.json → chunks → embeddings → ChromaDB
-#    - text-embedding-3-small model
-#
-# 2. Query Processing (per request)
-#    - User query (transcript) → embedding
-#    - ChromaDB similarity search → top-k relevant legal sections
-#    - LangChain chain: retrieved context + query → GPT-4o-mini
-#    - System prompt: "তুমি শুধু Parents' Maintenance Act 2013 এবং BPC অনুযায়ী উত্তর দেবে"
-#
-# 3. Output Structure:
-#    - abuse_type: string
-#    - applicable_sections: list of section IDs
-#    - section_summaries: dict {section_id: summary_in_bangla}
-#    - recommended_action: string (Bangla)
-#    - civil_or_criminal: string
-#    - urgency_level: 1-5
+import os, json, re
+import google.generativeai as genai
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
-class RAGLegalEngine:
-    def __init__(self, knowledge_base_path, vector_store_path):
-        # Initialize ChromaDB
-        # Load embeddings model
-        # Build vector store (if not exists)
-        pass
-    
-    def build_vector_store(self):
-        # act_knowledge_base.json → text chunks
-        # Chunk strategy: section-level (প্রতিটি section আলাদা chunk)
-        # Embed each chunk → store in ChromaDB
-        pass
-    
-    def query(self, transcript: str, keyword_classification: dict) -> dict:
-        # Hybrid approach:
-        # 1. keyword_classification থেকে initial category নাও
-        # 2. RAG দিয়ে detailed legal reasoning করো
-        # 3. GPT-4o-mini prompt: transcript + retrieved sections → structured output
-        pass
-    
-    def _build_prompt(self, transcript, retrieved_sections, kw_category):
-        system_prompt = """
-        তুমি একজন বাংলাদেশী আইনি সহায়তা AI।
-        তোমাকে শুধুমাত্র Parents' Maintenance Act 2013 এবং Bangladesh Penal Code
-        অনুযায়ী উত্তর দিতে হবে। কোনো অনুমান করবে না।
-        শুধুমাত্র নিচের retrieved legal sections এর উপর ভিত্তি করে উত্তর দাও।
-        """
-        # Retrieved sections context inject করো
-        # Structured JSON output চাও
-        pass
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+gemini = genai.GenerativeModel(
+    "gemini-1.5-flash",
+    generation_config={"response_mime_type": "application/json"}
+)
+
+embeddings = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+)
+
+def build_vector_store(kb_path: str, store_path: str):
+    with open(kb_path, encoding="utf-8") as f:
+        kb = json.load(f)
+    texts     = [v["text"]    for v in kb.values()]
+    metadatas = [{"section": v["section"]} for v in kb.values()]
+    vs = Chroma.from_texts(texts, embeddings,
+                           metadatas=metadatas,
+                           persist_directory=store_path)
+    vs.persist()
+    return vs
+
+def load_vector_store(store_path: str):
+    return Chroma(persist_directory=store_path, embedding_function=embeddings)
+
+def get_legal_advice(transcript: str, category: str,
+                     language_mode: str, vectorstore) -> dict:
+    results = vectorstore.similarity_search(f"{category}: {transcript}", k=3)
+    context = "\n\n".join([r.page_content for r in results])
+
+    if language_mode == "english":
+        lang_instruction = "Respond entirely in English."
+    elif language_mode == "bangla":
+        lang_instruction = "সম্পূর্ণ বাংলায় উত্তর দাও।"
+    else:
+        lang_instruction = "Provide advice in both Bangla and English."
+
+    prompt = f"""
+You are a Bangladesh elder abuse legal assistance AI.
+Answer ONLY based on the legal sections provided below. Do NOT make up laws.
+{lang_instruction}
+
+Legal Context:
+{context}
+
+Complaint: {transcript}
+Category: {category}
+
+Respond in JSON:
+{{
+  "abuse_type": "...",
+  "applicable_sections": ["PMA 2013 Section X", "BPC §XXX"],
+  "legal_advice_bangla": "...",
+  "legal_advice_english": "...",
+  "recommended_action_bangla": "...",
+  "recommended_action_english": "...",
+  "civil_or_criminal": "Civil | Criminal | Both",
+  "urgency": 1
+}}
+"""
+    response = gemini.generate_content(prompt)
+    try:
+        return json.loads(response.text)
+    except json.JSONDecodeError:
+        match = re.search(r'\{.*\}', response.text, re.DOTALL)
+        return json.loads(match.group()) if match else {}
 ```
 
-**RAG Vector Database Setup:**
+#### pdf_generator.py:
 ```python
-# act_knowledge_base.json structure:
-{
-  "preamble": {"text": "...", "section": "Preamble"},
-  "sec2": {"text": "...", "section": "Section 2 — Definitions"},
-  "sec3": {"text": "...", "section": "Section 3 — Maintenance Obligation"},
-  "sec4": {"text": "...", "section": "Section 4 — Medical Neglect & Abandonment"},
-  "sec5": {"text": "...", "section": "Section 5 — Complaint Procedure (UNO)"},
-  "sec6": {"text": "...", "section": "Section 6 — UNO Powers"},
-  "sec7": {"text": "...", "section": "Section 7 — Punishment (1 month jail / 5000 BDT)"},
-  "sec8": {"text": "...", "section": "Section 8 — Emergency Assistance"},
-  "bpc_323": {"text": "...", "section": "BPC §323 — Voluntarily Causing Hurt"},
-  "bpc_302": {"text": "...", "section": "BPC §302 — Murder Punishment"},
-  "bpc_420": {"text": "...", "section": "BPC §420 — Cheating & Property Fraud"},
-  "bpc_406": {"text": "...", "section": "BPC §406 — Breach of Trust"}
-}
+from fpdf import FPDF
+from datetime import date
+
+class ComplaintPDF(FPDF):
+    def header(self):
+        self.set_font("Bengali", size=12)
+        self.cell(0, 8, "গণপ্রজাতন্ত্রী বাংলাদেশ সরকার", align="C", new_x="LMARGIN", new_y="NEXT")
+        self.cell(0, 7, "উপজেলা নির্বাহী অফিসার বরাবর — অভিযোগপত্র", align="C", new_x="LMARGIN", new_y="NEXT")
+        self.ln(4)
+
+def generate_pdf(case_data: dict, language_mode: str = "bangla") -> bytes:
+    pdf = ComplaintPDF()
+    pdf.add_font("Bengali", fname="fonts/NotoSansBengali-Regular.ttf")
+    pdf.add_font("Latin",   fname="fonts/NotoSans-Regular.ttf")
+    pdf.set_fallback_fonts(["Latin"], exact_match=False)
+    pdf.add_page()
+    pdf.set_font("Bengali", size=10)
+
+    fields = [
+        ("নাম / Name",        case_data.get("victim_name", "—")),
+        ("বয়স / Age",         case_data.get("victim_age",  "—")),
+        ("ঠিকানা / Location", case_data.get("location",    "—")),
+        ("নির্যাতনের ধরন",    case_data.get("abuse_type",  "—")),
+    ]
+    for label, value in fields:
+        pdf.cell(0, 7, f"{label}: {value}", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(3)
+
+    pdf.set_font("Bengali", size=11)
+    pdf.cell(0, 8, "ঘটনার বিবরণ / Complaint:", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Bengali", size=10)
+    pdf.multi_cell(0, 6, case_data.get("transcript", ""))
+    pdf.ln(3)
+
+    pdf.set_font("Bengali", size=11)
+    pdf.cell(0, 8, "প্রযোজ্য আইন / Applicable Sections:", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Bengali", size=10)
+    for sec in case_data.get("applicable_sections", []):
+        pdf.cell(0, 6, f"  • {sec}", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(3)
+
+    pdf.set_font("Bengali", size=11)
+    pdf.cell(0, 8, "আইনি পরামর্শ / Legal Advice:", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Bengali", size=10)
+    advice = case_data.get("legal_advice_bangla", "") or case_data.get("legal_advice_english", "")
+    pdf.multi_cell(0, 6, advice)
+    pdf.ln(3)
+
+    pdf.set_font("Bengali", size=10)
+    pdf.cell(0, 6, "জরুরি: 999  |  বিনামূল্যে আইনি সহায়তা: 16430", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(8)
+    pdf.cell(0, 6, f"তারিখ / Date: {date.today().strftime('%d %B %Y')}", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(10)
+    pdf.cell(60, 7, "স্বাক্ষর / Signature", border="T")
+
+    return bytes(pdf.output())
 ```
 
-**File 6: `backend/app/entity_extractor.py`**
-```python
-# GPT-4o-mini দিয়ে entity extraction (Phase 2 এর regex-based কে replace করবে)
-
-class EntityExtractor:
-    def extract(self, transcript: str) -> dict:
-        # GPT-4o-mini prompt:
-        # transcript থেকে extract করো:
-        # - victim_name: str | null
-        # - victim_age: int | null  
-        # - location: str | null  (Bangladesh district/thana)
-        # - abuser_relation: str | null
-        # - incident_date: str | null
-        # - incident_type: list[str]
-        # - property_involved: bool
-        pass
+#### Phase 3 Deliverables:
+```
+□ backend/app/rag_engine.py
+□ backend/app/pdf_generator.py
+□ backend/app/entity_extractor.py (basic regex)
+□ backend/vector_store/ (ChromaDB — auto-generated)
+□ backend/fonts/NotoSansBengali-Regular.ttf
+□ backend/fonts/NotoSans-Regular.ttf
+□ main.py updated with /legal-advice + /generate-pdf endpoints
+□ Test: RAG query → legal advice JSON
+□ Test: PDF generated for 3 sample cases (Bangla, English, Mixed)
 ```
 
-**File 7: `backend/app/pdf_generator.py`**
-```python
-# ReportLab দিয়ে formal legal complaint PDF তৈরি
-
-class PDFGenerator:
-    def generate(self, transcript, entities, rag_result) -> bytes:
-        # PDF Structure:
-        # ১. Header: বাংলাদেশ সরকার লোগো + "অভিযোগপত্র"
-        # ২. অভিযোগকারীর তথ্য (victim info)
-        # ৩. অভিযুক্তের তথ্য (abuser info)
-        # ৪. ঘটনার বিবরণ (transcript + structured summary)
-        # ৫. প্রযোজ্য আইনি ধারা (legal sections)
-        # ৬. দাবি ও প্রার্থনা (demands)
-        # ৭. স্বাক্ষর স্থান
-        # ৮. QR Code (case reference)
-        pass
+#### Common Errors (Phase 3):
 ```
+Error: ChromaDB "Collection already exists"
+Fix:   os.path.exists("vector_store") হলে load করো, না হলে build করো
 
-**Updated main.py — Phase 3 additions:**
-```python
-# POST /transcribe endpoint এ নতুন pipeline:
-# Step 1: Audio preprocessing (same as Phase 2)
-# Step 2: Whisper transcription (same as Phase 2)
-# Step 3: Keyword classification (same as Phase 2)
-# Step 4: RAG legal triage (NEW - Phase 3)
-# Step 5: Entity extraction via GPT-4o-mini (NEW - Phase 3)
-# Step 6: PDF generation (NEW - Phase 3)
+Error: Gemini JSON parse failed
+Fix:   generation_config={"response_mime_type": "application/json"}
 
-# New Endpoints:
-# POST /generate-pdf    — From existing case data → PDF
-# GET  /legal-info      — Legal section reference lookup
+Error: Bangla PDF blank squares
+Fix:   NotoSansBengali-Regular.ttf font ব্যবহার করো
+       Download: fonts.google.com/noto/specimen/Noto+Sans+Bengali
 ```
-
-#### 6.3.2 RAG Evaluation Plan
-```python
-# Test against train_split.csv and test_split.csv:
-# 1. F1-Score > 0.85 for abuse category classification
-# 2. Zero "Legal Hallucinations" — সব legal reference actual Act থেকে হতে হবে
-# 3. Top-K Accuracy — correct section retrieved in top-3 results
-# 4. PDF generation time < 5 seconds
-```
-
-#### 6.3.3 Phase 3 Deliverables
-- [ ] `backend/app/rag_engine.py`
-- [ ] `backend/app/entity_extractor.py`
-- [ ] `backend/app/pdf_generator.py`
-- [ ] `backend/vector_store/` (ChromaDB auto-generated)
-- [ ] Updated `backend/app/main.py` with Phase 3 endpoints
-- [ ] Updated `phase2_requirements.txt` with Phase 3 dependencies
-- [ ] `backend/tests/test_rag.py`
-- [ ] `backend/tests/test_pdf.py`
-
-#### 6.3.4 Phase 3 Success Criteria
-- F1-Score > 0.85 on test_split.csv
-- Zero hallucinations (all legal citations verifiable)
-- Entity extraction accuracy ≥ 90% for Name, Location, Abuser
-- PDF generation < 5 seconds
 
 ---
 
-### 🔲 PHASE 4 — Deployment & Automation (Frontend + Geospatial)
-**Timeline:** June – August 2026
-**Goal:** React Frontend, UNO map, Firebase integration, offline-first
+### PHASE 4 — Frontend + Map
+**Timeline:** Week 6–7
+**Owner:** Lamia
 
-#### 6.4.1 What to Build
+#### কী করতে হবে:
 
-**React App Structure:**
+```
+1. React + Vite app তৈরি
+2. Tailwind CSS setup
+3. VoiceRecorder component (mic button + recording UI)
+4. ResultDisplay component (transcript + category + advice)
+5. MapView component (Leaflet.js + UNO locations)
+6. Emergency buttons (999, 16430)
+7. PDF download button
+8. Firebase Firestore basic setup (case save)
+9. Vercel deploy
+```
+
+#### Folder Structure (Phase 4):
 ```
 frontend/
 ├── src/
 │   ├── components/
-│   │   ├── VoiceRecorder.jsx     ← মাইক্রোফোন button, recording UI
-│   │   ├── TranscriptDisplay.jsx ← Bangla transcript show
-│   │   ├── AbuseResult.jsx       ← Category badge + severity meter
-│   │   ├── LegalAdvice.jsx       ← Section-wise legal breakdown
-│   │   ├── MapView.jsx           ← Leaflet.js UNO map
-│   │   └── PDFDownload.jsx       ← PDF download button
+│   │   ├── VoiceRecorder.jsx
+│   │   ├── ResultDisplay.jsx
+│   │   ├── MapView.jsx
+│   │   └── EmergencyButtons.jsx
 │   ├── pages/
-│   │   ├── Home.jsx              ← Landing page (senior-friendly)
-│   │   └── Report.jsx            ← Main reporting page
+│   │   ├── Home.jsx
+│   │   └── Report.jsx
 │   ├── services/
-│   │   ├── api.js                ← FastAPI calls
-│   │   └── firebase.js           ← Firebase Firestore
+│   │   ├── api.js
+│   │   └── firebase.js
 │   └── App.jsx
+├── public/
+└── package.json
 ```
 
-**VoiceRecorder Component Logic:**
-```javascript
-// MediaRecorder API ব্যবহার করে audio capture
-// Supported: webm/opus (Chrome), ogg (Firefox)
-// UI: বড় লাল button, recording indicator, Bengali label
-// Senior-friendly: বড় font, high contrast colors
-// POST করবে /transcribe endpoint এ
-```
+#### VoiceRecorder.jsx:
+```jsx
+import { useState, useRef } from 'react';
 
-**MapView Component (Leaflet.js):**
-```javascript
-// geospatial/uno_locations.json থেকে 495 UNO coordinates load
-// Haversine formula দিয়ে user GPS থেকে nearest UNO calculate
-// Leaflet.js এ:
-//   - User location marker (blue)
-//   - Nearest 3 UNO markers (red)
-//   - Hospital markers (green)
-//   - Distance labels
-// Click on marker → UNO name, phone, address
-```
+export default function VoiceRecorder({ onComplete }) {
+  const [recording, setRecording] = useState(false);
+  const mediaRef = useRef(null);
+  const chunksRef = useRef([]);
 
-**Haversine Formula:**
-```javascript
-function haversineDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Earth radius in km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2)**2 + 
-              Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * 
-              Math.sin(dLon/2)**2;
-    return R * 2 * Math.asin(Math.sqrt(a));
+  const start = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRef.current = new MediaRecorder(stream);
+    mediaRef.current.ondataavailable = e => chunksRef.current.push(e.data);
+    mediaRef.current.onstop = () => {
+      const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+      onComplete(blob);
+      chunksRef.current = [];
+    };
+    mediaRef.current.start();
+    setRecording(true);
+  };
+
+  const stop = () => { mediaRef.current.stop(); setRecording(false); };
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <button
+        onClick={recording ? stop : start}
+        className={`w-36 h-36 rounded-full text-white text-xl font-bold
+          ${recording ? 'bg-gray-500 animate-pulse' : 'bg-red-600 hover:bg-red-700'}`}
+      >
+        {recording ? 'থামুন ⏹' : 'কথা বলুন 🎤'}
+      </button>
+      {recording && <p className="text-red-600 font-bold">● রেকর্ডিং চলছে...</p>}
+    </div>
+  );
 }
 ```
 
-**Firebase Integration:**
-```javascript
-// Firestore structure:
-// cases/{case_id}/
-//   - timestamp
-//   - transcript
-//   - classification
-//   - entities
-//   - rag_result
-//   - location_lat, location_lon
-//   - status: "reported" | "filed" | "resolved"
-//
-// Firebase Storage:
-//   - audio/{case_id}/recording.wav (AES-256 encrypted)
-//   - pdfs/{case_id}/complaint.pdf
+#### MapView.jsx (Leaflet.js):
+```jsx
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 6371, toR = d => d * Math.PI / 180;
+  const a = Math.sin(toR(lat2-lat1)/2)**2 +
+            Math.cos(toR(lat1)) * Math.cos(toR(lat2)) *
+            Math.sin(toR(lon2-lon1)/2)**2;
+  return R * 2 * Math.asin(Math.sqrt(a));
+}
+
+export default function MapView({ userLat, userLon, unoList }) {
+  const nearest = unoList
+    .map(u => ({ ...u, dist: haversine(userLat, userLon, u.lat, u.lon) }))
+    .sort((a, b) => a.dist - b.dist)
+    .slice(0, 3);
+
+  return (
+    <MapContainer center={[userLat, userLon]} zoom={11}
+                  style={{ height: '350px', width: '100%' }}>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {nearest.map(u => (
+        <Marker key={u.id} position={[u.lat, u.lon]}>
+          <Popup>
+            <b>{u.district} UNO অফিস</b><br/>
+            📞 {u.phone}<br/>
+            🚶 {u.dist.toFixed(1)} কিমি
+          </Popup>
+        </Marker>
+      ))}
+    </MapContainer>
+  );
+}
 ```
 
-**UNO Database (`geospatial/uno_locations.json`):**
+#### uno_locations.json (Phase 4 শুরুতে ৬৪ district HQ দিয়ে শুরু):
 ```json
 [
-  {
-    "id": "UNO_001",
-    "upazila": "Rupganj",
-    "district": "Narayanganj",
-    "division": "Dhaka",
-    "lat": 23.7800,
-    "lon": 90.5200,
-    "phone": "+880-2-...",
-    "address": "..."
-  },
-  // ... 495 UNO entries
+  {"id": "UNO_01", "district": "Dhaka",        "upazila": "Savar",    "lat": 23.8581, "lon": 90.2659, "phone": "02-XXXXXXX"},
+  {"id": "UNO_02", "district": "Narayanganj",  "upazila": "Rupganj",  "lat": 23.7800, "lon": 90.5200, "phone": "02-XXXXXXX"},
+  {"id": "UNO_03", "district": "Chittagong",   "upazila": "Sitakunda","lat": 22.6200, "lon": 91.6600, "phone": "031-XXXXXX"}
 ]
 ```
 
-#### 6.4.2 Phase 4 Deliverables
-- [ ] `frontend/` — Complete React app (Vite)
-- [ ] `geospatial/uno_locations.json` — 495 UNO GPS coordinates
-- [ ] Firebase project setup (Firestore + Storage)
-- [ ] Senior-friendly UI (large fonts, Bengali labels, minimal clicks)
-- [ ] Offline-first functionality (Service Worker + Firestore offline)
-- [ ] AES-256 encryption for sensitive data
+#### Emergency Buttons:
+```jsx
+export default function EmergencyButtons({ severity }) {
+  return (
+    <div className="flex flex-col gap-3 mt-4">
+      {severity >= 4 && (
+        <a href="tel:999"
+           className="bg-red-600 text-white text-center py-4 rounded-xl text-xl font-bold">
+          🚨 এখনই 999 কল করুন
+        </a>
+      )}
+      <a href="tel:16430"
+         className="bg-green-600 text-white text-center py-3 rounded-xl font-bold">
+        📞 বিনামূল্যে আইনি সহায়তা: 16430
+      </a>
+    </div>
+  );
+}
+```
 
-#### 6.4.3 Phase 4 Success Criteria
-- UNO distance accuracy within 10 meters
-- Map render latency < 3 seconds
-- App usable with 2G internet
-- UI passes senior-friendly test (UAT)
+#### Phase 4 Deliverables:
+```
+□ frontend/ React app (Vite)
+□ VoiceRecorder.jsx
+□ ResultDisplay.jsx
+□ MapView.jsx (Leaflet.js)
+□ EmergencyButtons.jsx (severity-based)
+□ geospatial/uno_locations.json (64 district entries)
+□ Firebase Firestore — basic case save
+□ Vercel deploy (HTTPS — geolocation এর জন্য দরকার)
+□ Full demo: voice → text → advice → PDF → map
+```
 
 ---
 
-### 🔲 PHASE 5 — Validation & Final Defense
-**Timeline:** August 2026
-**Goal:** System testing, benchmarking, thesis writing, final presentation
+### PHASE 5 — Testing + Deploy + Thesis
+**Timeline:** Week 8
+**Owner:** Lamia (testing) + Ananna (thesis) + Farihaa (user test)
 
-#### 6.5.1 What to Do
+#### কী করতে হবে:
 
-**System Integration Testing:**
 ```
-Full Pipeline Test:
-Audio Input → Whisper → Keyword → RAG → PDF → Map
-↓
-Measure: End-to-end latency (target < 10 seconds)
+1. End-to-end test (3 sample cases: Bangla, English, Mixed)
+2. Bug fix (যা test এ বের হবে)
+3. Render.com এ backend deploy
+4. Vercel এ frontend deploy
+5. 5 জন বয়স্ক user দিয়ে test (Farihaa করবে)
+6. Thesis final polish
+7. Demo video record করো (5-10 মিনিট)
+8. Presentation slides তৈরি
 ```
 
-**Accuracy Benchmarking:**
+#### Evaluation (Simplified):
 ```python
-# test_split.csv (43 cases) এর উপর:
-# 1. Abuse Category Classification:
-#    - Precision, Recall, F1-Score per category
-#    - Macro F1 > 0.85
+# test_split.csv (43 cases) দিয়ে test:
+# 1. Abuse Category Accuracy:
+#    - Keyword classifier: correct category / total × 100
+#    - Target: > 75% accuracy
 #
-# 2. WER Measurement:
-#    - Record Bengali sentences → transcribe → measure WER
-#    - Target: WER < 15% for regional dialects
+# 2. RAG Legal Section:
+#    - Manually check 10 cases: legal section সঠিক কিনা
+#    - Target: ≥ 8/10 সঠিক
 #
-# 3. Legal Section Accuracy:
-#    - Gold standard annotations vs RAG output
-#    - Zero hallucinations
-#
-# 4. Entity Extraction:
-#    - Name extraction accuracy
-#    - Location extraction accuracy
-#    - Age extraction accuracy
+# 3. Whisper WER:
+#    - 5টি test audio record করো (নিজে বলো)
+#    - Ground truth text লিখে রাখো
+#    - WER calculate করো
+#    - Target: < 20% WER
 ```
 
-**UAT (User Acceptance Testing):**
-- ১০+ বয়স্ক ব্যবহারকারী দিয়ে test
-- Task completion rate > 80%
-- Average task time < 3 minutes
-
-#### 6.5.2 Final Deliverables
-- [ ] Complete integrated system (deployed on cloud)
-- [ ] Benchmarking results report
-- [ ] Final Senior Design Thesis (Blackbook)
-- [ ] Final Presentation slides
-- [ ] System demonstration video
-
----
-
-## 7. COMPLETE ROADMAP (Gantt Summary)
-
+#### Phase 5 Deliverables:
 ```
-PHASE          FEB    MAR    APR    MAY    JUN    JUL    AUG
-─────────────────────────────────────────────────────────────
-Phase 1        ████   ██
-(Data Eng)
-
-Phase 2               ████   ██
-(Backend)
-
-Phase 3                       ████   ████
-(RAG + AI)
-
-Phase 4                              ████   ████
-(Frontend)
-
-Phase 5                                     ████   ████
-(Testing)
-─────────────────────────────────────────────────────────────
-PROJECT START: 02/02/2026         DUE DATE: 31/08/2026
+□ Deployed backend URL (Render)
+□ Deployed frontend URL (Vercel)
+□ Accuracy report (classifier + RAG)
+□ 5 user test feedback summary (Farihaa করবে)
+□ Final thesis (Blackbook)
+□ Presentation slides (10-12 slides)
+□ Demo video (5-10 min)
 ```
 
 ---
 
-## 8. IMPLEMENTATION ORDER (কোনটার পরে কোনটা করব)
+## 7. SIMPLIFIED 2-MONTH ROADMAP
 
 ```
-Step 1: Phase 1 — Dataset clean + EDA
-    ↓
-Step 2: Phase 1 — keyword_dictionary.json + act_knowledge_base.json
-    ↓
-Step 3: Phase 2 — Backend setup (requirements.txt, .env, .gitignore)
-    ↓
-Step 4: Phase 2 — AudioPreprocessor (preprocessor.py)
-    ↓
-Step 5: Phase 2 — WhisperService (whisper_service.py)
-    ↓
-Step 6: Phase 2 — KeywordClassifier (keyword_classifier.py)
-    ↓
-Step 7: Phase 2 — FastAPI main.py (with /transcribe, /health)
-    ↓
-Step 8: Phase 2 — Test all endpoints
-    ↓
-Step 9: Phase 3 — ChromaDB vector store setup
-    ↓
-Step 10: Phase 3 — RAG Engine (rag_engine.py)
-    ↓
-Step 11: Phase 3 — Entity Extractor (entity_extractor.py)
-    ↓
-Step 12: Phase 3 — PDF Generator (pdf_generator.py)
-    ↓
-Step 13: Phase 3 — Update main.py with new endpoints
-    ↓
-Step 14: Phase 3 — Evaluate RAG (F1-Score on test set)
-    ↓
-Step 15: Phase 4 — UNO location database (uno_locations.json)
-    ↓
-Step 16: Phase 4 — React app setup (Vite)
-    ↓
-Step 17: Phase 4 — VoiceRecorder component
-    ↓
-Step 18: Phase 4 — MapView component (Leaflet.js)
-    ↓
-Step 19: Phase 4 — Firebase integration
-    ↓
-Step 20: Phase 5 — Integration testing + benchmarking
-    ↓
-Step 21: Phase 5 — Thesis writing + presentation
+         WEEK 1    WEEK 2    WEEK 3    WEEK 4
+         ────────────────────────────────────
+Phase 1  ██████████████
+Phase 2            ██████████████████
+                   WEEK 4    WEEK 5    WEEK 6    WEEK 7    WEEK 8
+                   ──────────────────────────────────────────────
+Phase 3            ██████████████████
+Phase 4                               ██████████████████
+Phase 5                                                   ████████
+
+Start: Now           End: Week 8
 ```
 
 ---
 
-## 9. SUCCESS METRICS (Per Proposal)
+## 8. IMPLEMENTATION ORDER (Step by Step)
 
-| Objective | Target Metric | Measurement Method |
-|-----------|-------------|-------------------|
-| Dataset Quality | 100% Category-Reason correlation | Manual verification |
-| Speech Accuracy | WER < 15% for regional dialects | Test recordings |
-| Legal Triage | F1-Score > 0.85 | test_split.csv evaluation |
-| Legal Reliability | Zero hallucinations | Manual audit of all citations |
-| Entity Extraction | 100% for Name, Location, Abuser | test_split.csv evaluation |
-| PDF Generation | < 5 seconds | Timer benchmark |
-| UNO Navigation | Distance accuracy ±10 meters | GPS validation |
-| Map Latency | < 3 seconds | Browser performance test |
-
----
-
-## 10. KEY DESIGN DECISIONS
-
-### 10.1 Why Whisper Large-v3?
-- Bangla WER সবচেয়ে কম (~8-12% for standard, ~14-18% for dialects)
-- Regional dialect (Sylhet, Chittagong, Noakhali) support
-- Open-source, no per-API-call cost
-
-### 10.2 Why RAG instead of fine-tuning?
-- Training data কম (199 cases)
-- Legal hallucination prevent করতে RAG সবচেয়ে effective
-- Act update হলে শুধু knowledge base update করলেই হবে
-- GPT-4o-mini সস্তা + fast
-
-### 10.3 Why ChromaDB?
-- Lightweight, local-first
-- Easy to set up (no separate server needed)
-- Good for small knowledge bases (12 sections)
-
-### 10.4 Why React (Vite) instead of Flutter?
-- Web-first approach (smartphone browser থেকেই access)
-- Offline-first Firebase + Service Worker দিয়ে
-- Leaflet.js integration সহজ
-
-### 10.5 Why Keyword Classifier (Phase 2) + RAG (Phase 3) দুটোই?
-- Keyword: Fast, no API cost, works offline
-- RAG: Deep legal reasoning, better accuracy
-- Hybrid: Keyword → initial triage, RAG → detailed legal advice
+```
+Step 1:  data/ folder + dataset load + EDA notebook
+Step 2:  cleaned_dataset.csv + train/test split
+Step 3:  keyword_dictionary.json তৈরি
+Step 4:  act_knowledge_base.json তৈরি
+Step 5:  backend/app/ setup + requirements.txt + .env
+Step 6:  preprocessor.py (audio → WAV)
+Step 7:  whisper_service.py (Groq API)
+Step 8:  keyword_classifier.py
+Step 9:  main.py — /health + /transcribe + /transcribe/text
+Step 10: Phase 2 test complete ✅
+Step 11: ChromaDB vector store build
+Step 12: rag_engine.py (Gemini Flash)
+Step 13: entity_extractor.py (basic regex)
+Step 14: pdf_generator.py (fpdf2 + NotoSansBengali)
+Step 15: main.py update — Phase 3 endpoints
+Step 16: Phase 3 test complete ✅
+Step 17: uno_locations.json (64 entries)
+Step 18: React app + VoiceRecorder
+Step 19: MapView (Leaflet.js)
+Step 20: EmergencyButtons + PDF download
+Step 21: Firebase Firestore basic save
+Step 22: Vercel + Render deploy
+Step 23: End-to-end test + bug fix
+Step 24: Thesis + demo video + presentation
+```
 
 ---
 
-## 11. ENVIRONMENT SETUP
+## 9. SUCCESS METRICS (Realistic Targets)
 
-### 11.1 Python Environment
+| Metric | Target | Method |
+|--------|--------|--------|
+| Whisper WER | < 20% | 5 test recordings |
+| Category Accuracy | > 75% | test_split.csv (43 cases) |
+| RAG Legal Accuracy | ≥ 8/10 | Manual check (10 cases) |
+| PDF Generation Time | < 10 seconds | Timer test |
+| UNO Map Load | < 5 seconds | Browser test |
+| User Task Completion | ≥ 4/5 users complete | Farihaa's 5-person UAT |
+
+---
+
+## 10. ENVIRONMENT SETUP
+
 ```bash
-# Python 3.10+ required
+# Backend setup
 python -m venv venv
-source venv/bin/activate      # Linux/Mac
-# OR
 venv\Scripts\activate          # Windows
 
-pip install -r phase2_requirements.txt
+pip install -r requirements.txt
+winget install --id Gyan.FFmpeg   # ffmpeg (MUST)
 
-# ffmpeg install করতে হবে (audio conversion এর জন্য):
-# Windows: winget install ffmpeg
-# Linux: sudo apt install ffmpeg
-```
-
-### 11.2 Environment Variables (`.env`)
-```
-OPENAI_API_KEY=sk-...
+# .env file তৈরি করো (gitignored):
+GROQ_API_KEY=gsk_...
+GOOGLE_API_KEY=AIza...
 FIREBASE_API_KEY=...
-FIREBASE_AUTH_DOMAIN=...
 FIREBASE_PROJECT_ID=...
-FIREBASE_STORAGE_BUCKET=...
-```
 
-### 11.3 Run Backend
-```bash
+# Backend run
 cd backend
 uvicorn app.main:app --reload --port 8000
-```
 
-### 11.4 Run Frontend (Phase 4)
-```bash
+# Frontend setup (Phase 4)
+npm create vite@latest frontend -- --template react
 cd frontend
 npm install
-npm run dev     # Vite dev server on port 5173
+npm install -D tailwindcss postcss autoprefixer
+npm install leaflet react-leaflet axios firebase
+npm run dev
 ```
+
+---
+
+## 11. KEY DESIGN DECISIONS
+
+| Decision | কেন |
+|----------|-----|
+| Groq Whisper API (not local) | Local Whisper Large-v3 এ GPU দরকার — Groq free + fast |
+| Gemini Flash (not GPT-4) | Gemini free tier 1M tokens/day — GPT-4 paid |
+| HuggingFace embeddings (not OpenAI) | Free, local, multilingual — OpenAI paid |
+| ChromaDB (not Pinecone) | Local folder — Pinecone server দরকার |
+| React PWA (not native app) | Browser এ চলে — Play Store upload লাগে না |
+| 64 UNO locations (not 495) | 64 district HQ দিয়ে শুরু — 495 later |
+| fpdf2 (not ReportLab) | Simple API, Bangla font support — ReportLab complex |
 
 ---
 
@@ -1041,53 +997,80 @@ npm run dev     # Vite dev server on port 5173
 
 | Phase | Status | Notes |
 |-------|--------|-------|
-| **Phase 1** — Data Engineering | 🔲 TO DO | Repo clean, needs to be re-implemented |
-| **Phase 2** — Speech Backend | 🔲 TO DO | Repo clean, needs to be re-implemented |
-| **Phase 3** — RAG + AI | 🔲 TO DO | Not yet started |
-| **Phase 4** — Frontend | 🔲 TO DO | Not yet started |
-| **Phase 5** — Validation | 🔲 TO DO | Not yet started |
+| Phase 1 — Dataset | 🔲 TO DO | শুরু করতে হবে |
+| Phase 2 — Backend | 🔲 TO DO | শুরু করতে হবে |
+| Phase 3 — RAG + PDF | 🔲 TO DO | শুরু করতে হবে |
+| Phase 4 — Frontend | 🔲 TO DO | শুরু করতে হবে |
+| Phase 5 — Testing | 🔲 TO DO | শুরু করতে হবে |
 
-> **Note:** পূর্বে Phase 1 ও Phase 2 সম্পূর্ণ করা হয়েছিল, কিন্তু branch mismatch এর কারণে repo clean করা হয়েছে। এখন fresh start করা হচ্ছে এই implementation-flow.md অনুযায়ী।
+> **Note:** Repo fresh start (May 2026). docs/ folder এ planning complete।
 
 ---
 
 ## 13. LEGAL FRAMEWORK REFERENCE
 
-### Parents' Maintenance Act 2013 — Key Sections
+### Parents' Maintenance Act 2013
 
-| Section | বিষয় | Relevant For |
-|---------|------|-------------|
-| §2 | Definitions (Parents, Child, Maintenance, UNO) | All categories |
-| §3 | সন্তানের ভরণপোষণের বাধ্যবাধকতা | Physical, Financial, Verbal |
-| §4 | চিকিৎসা অবহেলা ও পরিত্যাগ | Neglect, Abandonment |
-| §5 | অভিযোগ দাখিল পদ্ধতি (UNO-তে) | All categories |
-| §6 | UNO-এর ক্ষমতা — শুনানি ও আদেশ | All categories |
-| §7 | শাস্তি (১ মাস কারাদণ্ড বা ৫,০০০ টাকা জরিমানা) | All categories |
-| §8 | জরুরি ও অন্তর্বর্তী সহায়তা | Emergency cases |
+| Section | বিষয় |
+|---------|------|
+| §3 | সন্তানের ভরণপোষণের বাধ্যবাধকতা |
+| §4 | চিকিৎসা অবহেলা ও পরিত্যাগ নিষিদ্ধ |
+| §5 | UNO অফিসে অভিযোগ দাখিলের পদ্ধতি |
+| §6 | UNO-এর ক্ষমতা (শুনানি ও আদেশ) |
+| §7 | শাস্তি: ১ মাস কারাদণ্ড বা ৫,০০০ টাকা জরিমানা |
+| §8 | জরুরি সহায়তার বিধান |
 
-### Bangladesh Penal Code — Relevant Sections
+### Bangladesh Penal Code
 
-| Section | বিষয় | Applicable Abuse |
-|---------|------|-----------------|
-| §302 | হত্যার শাস্তি | Murder |
-| §304 | অনিচ্ছাকৃত হত্যা | Murder (negligent) |
-| §323 | স্বেচ্ছায় আঘাত করা | Physical Abuse |
-| §406 | বিশ্বাস ভঙ্গ | Financial Exploitation |
-| §420 | প্রতারণা ও সম্পত্তি আত্মসাৎ | Financial Exploitation |
-| §506 | ভয় দেখানো | Verbal Abuse |
+| Section | বিষয় |
+|---------|------|
+| §302 | হত্যার শাস্তি |
+| §323 | স্বেচ্ছায় আঘাত |
+| §406 | বিশ্বাস ভঙ্গ |
+| §420 | প্রতারণা ও সম্পত্তি আত্মসাৎ |
+| §506 | ভয় দেখানো |
 
----
+### Emergency Contacts
 
-## 14. NOTES FOR FUTURE UPDATE
-
-এই ফাইলটি প্রতিটি phase শেষে update করতে হবে:
-- Phase 1 শেষে: Current Status আপডেট করো
-- Phase 2 শেষে: WER results যোগ করো
-- Phase 3 শেষে: F1-Score results যোগ করো
-- Phase 4 শেষে: UAT results যোগ করো
-- Phase 5 শেষে: Final benchmark results যোগ করো
+| Service | Number |
+|---------|--------|
+| জাতীয় জরুরি সেবা | 999 |
+| বিনামূল্যে আইনি সহায়তা (NLASO) | 16430 |
+| মহিলা হেল্পলাইন | 10921 |
 
 ---
 
-*Last Updated: 28 May 2026 — Initial Documentation*
-*Next Update: After Phase 1 completion*
+## 14. FUTURE WORK (এই thesis এ নেই — পরে করা যাবে)
+
+> এগুলো over-engineered বা time-consuming — 2 মাসের thesis এ দরকার নেই।
+> পরে research paper বা Version 2 তে add করা যাবে।
+
+```
+1. AES-256 encryption for audio/PDF files
+2. Service Worker — full offline mode
+3. QR Code in PDF
+4. 495 UNO GPS entries (এখন 64 district HQ দিয়ে শুরু)
+5. Admin pattern dashboard (case trends, district map)
+6. SMS notification to UNO office
+7. Case history tracking + case status
+8. Dialect-specific fine-tuning (Sylheti, Chittagong)
+9. Multi-abuse detection (one complaint → multiple categories simultaneously)
+10. Photo/document evidence upload
+11. Anonymous reporting with case reference number
+12. Community Reporter Mode (NGO worker reports on behalf of elder)
+```
+
+---
+
+## 15. NOTES FOR PHASE-END UPDATE
+
+এই ফাইলটি প্রতিটি phase শেষে update করো:
+- Phase 1 শেষে: Current Status ✅ + EDA findings যোগ করো
+- Phase 2 শেষে: WER result + API response time যোগ করো
+- Phase 3 শেষে: RAG accuracy (8/10 বা কত?) যোগ করো
+- Phase 4 শেষে: Deploy URL যোগ করো
+- Phase 5 শেষে: Final metrics + thesis link যোগ করো
+
+---
+
+*Last Updated: 29 May 2026 — Simplified for 2-month timeline*
