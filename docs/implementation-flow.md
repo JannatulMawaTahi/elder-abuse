@@ -11,7 +11,8 @@
 > - Farihaa Khadija Ahmed (2221852042)
 
 > **Target Deadline: 2 months from start**
-> **Last Updated: 29 May 2026**
+> **Last Updated: 30 May 2026**
+> **Legend:** `✅ Done` | `🔄 Partially Done` | `⬜ Pending` | `⏭️ Next Up`
 
 ---
 
@@ -287,11 +288,14 @@ elder-abuse/
 
 #### Phase 1 Deliverables:
 ```
-□ data/cleaned_dataset.csv
-□ data/train_split.csv + test_split.csv
-□ notebooks/01_eda.ipynb (EDA charts)
-□ backend/phase1_outputs/keyword_dictionary.json
-□ backend/phase1_outputs/act_knowledge_base.json
+✅ data/Elder_abuse_Dataset.csv          (199 rows — loaded)
+✅ notebooks/01_eda.ipynb               (21 cells, 11 charts — done)
+✅ data/chart_01 to chart_11.png        (EDA charts — done)
+⏭️ data/cleaned_dataset.csv             ← Step 2 (NEXT)
+⬜ data/train_split.csv
+⬜ data/test_split.csv
+⬜ backend/phase1_outputs/keyword_dictionary.json   ← Step 3
+⬜ backend/phase1_outputs/act_knowledge_base.json   ← Step 4
 ```
 
 #### Common Errors (Phase 1):
@@ -907,31 +911,42 @@ Start: Now           End: Week 8
 ## 8. IMPLEMENTATION ORDER (Step by Step)
 
 ```
-Step 1:  data/ folder + dataset load + EDA notebook
-Step 2:  cleaned_dataset.csv + train/test split
-Step 3:  keyword_dictionary.json তৈরি
-Step 4:  act_knowledge_base.json তৈরি
-Step 5:  backend/app/ setup + requirements.txt + .env
-Step 6:  preprocessor.py (audio → WAV)
-Step 7:  whisper_service.py (Groq API)
-Step 8:  keyword_classifier.py
-Step 9:  main.py — /health + /transcribe + /transcribe/text
-Step 10: Phase 2 test complete ✅
-Step 11: ChromaDB vector store build
-Step 12: rag_engine.py (Gemini Flash)
-Step 13: entity_extractor.py (basic regex)
-Step 14: pdf_generator.py (fpdf2 + NotoSansBengali)
-Step 15: main.py update — Phase 3 endpoints
-Step 16: Phase 3 test complete ✅
-Step 17: uno_locations.json (64 entries)
-Step 18: React app + VoiceRecorder
-Step 19: MapView (Leaflet.js)
-Step 20: EmergencyButtons + PDF download
-Step 21: Firebase Firestore basic save
-Step 22: Vercel + Render deploy
-Step 23: End-to-end test + bug fix
-Step 24: Thesis + demo video + presentation
+── PHASE 1 ──────────────────────────────────────────────────────
+✅ Step 1:  data/ folder + dataset load + EDA notebook (11 charts)
+⏭️ Step 2:  cleaned_dataset.csv + train/test split         ← NEXT
+⬜ Step 3:  keyword_dictionary.json তৈরি
+⬜ Step 4:  act_knowledge_base.json তৈরি
+
+── PHASE 2 ──────────────────────────────────────────────────────
+⬜ Step 5:  backend/app/ setup + requirements.txt + .env
+⬜ Step 6:  preprocessor.py (audio → WAV)
+⬜ Step 7:  whisper_service.py (Groq API)
+⬜ Step 8:  keyword_classifier.py
+⬜ Step 9:  main.py — /health + /transcribe + /transcribe/text
+⬜ Step 10: Phase 2 test complete
+
+── PHASE 3 ──────────────────────────────────────────────────────
+⬜ Step 11: ChromaDB vector store build
+⬜ Step 12: rag_engine.py (Gemini Flash)
+⬜ Step 13: entity_extractor.py (basic regex)
+⬜ Step 14: pdf_generator.py (fpdf2 + NotoSansBengali)
+⬜ Step 15: main.py update — Phase 3 endpoints
+⬜ Step 16: Phase 3 test complete
+
+── PHASE 4 ──────────────────────────────────────────────────────
+⬜ Step 17: uno_locations.json (64 entries)
+⬜ Step 18: React app + VoiceRecorder
+⬜ Step 19: MapView (Leaflet.js)
+⬜ Step 20: EmergencyButtons + PDF download
+⬜ Step 21: Firebase Firestore basic save
+⬜ Step 22: Vercel + Render deploy
+
+── PHASE 5 ──────────────────────────────────────────────────────
+⬜ Step 23: End-to-end test + bug fix
+⬜ Step 24: Thesis + demo video + presentation
 ```
+
+**Progress: 1 / 24 Steps complete (4.2%)**
 
 ---
 
@@ -995,15 +1010,98 @@ npm run dev
 
 ## 12. CURRENT STATUS
 
-| Phase | Status | Notes |
-|-------|--------|-------|
-| Phase 1 — Dataset | 🔲 TO DO | শুরু করতে হবে |
-| Phase 2 — Backend | 🔲 TO DO | শুরু করতে হবে |
-| Phase 3 — RAG + PDF | 🔲 TO DO | শুরু করতে হবে |
-| Phase 4 — Frontend | 🔲 TO DO | শুরু করতে হবে |
-| Phase 5 — Testing | 🔲 TO DO | শুরু করতে হবে |
+### Overall Progress
 
-> **Note:** Repo fresh start (May 2026). docs/ folder এ planning complete।
+| Phase | Status | Week | Done | Pending |
+|-------|--------|------|------|---------|
+| **Phase 1** — Dataset & EDA | 🔄 Partially Done | Week 1–2 | Step 1 | Steps 2, 3, 4 |
+| **Phase 2** — Backend + Whisper | ⬜ Pending | Week 2–3 | — | Steps 5–10 |
+| **Phase 3** — RAG + PDF | ⬜ Pending | Week 4–5 | — | Steps 11–16 |
+| **Phase 4** — Frontend + Map | ⬜ Pending | Week 6–7 | — | Steps 17–22 |
+| **Phase 5** — Test + Deploy | ⬜ Pending | Week 8 | — | Steps 23–24 |
+
+---
+
+### Phase 1 — Detailed Tracking
+
+| Item | Status | Notes |
+|------|--------|-------|
+| `data/` folder | ✅ Done | Created |
+| `notebooks/` folder | ✅ Done | Created |
+| `backend/phase1_outputs/` folder | ✅ Done | Created |
+| `Elder_abuse_Dataset.csv` | ✅ Done | 199 rows, 12 columns |
+| `notebooks/01_eda.ipynb` | ✅ Done | 21 cells, run complete |
+| Column normalization (Category, Relation) | ✅ Done | In notebook Cell 6 |
+| Severity Score column | ✅ Done | In notebook Cell 6 |
+| Trust Blind Spot column | ✅ Done | In notebook Cell 6 |
+| 11 EDA charts | ✅ Done | Saved in `data/` folder |
+| `.gitignore` | ✅ Done | data CSV + venv excluded |
+| **Step 1 — Dataset Load + EDA** | ✅ **DONE** | Confirmed by Lamia |
+| `data/cleaned_dataset.csv` | ⏭️ **NEXT** | Step 2 |
+| `data/train_split.csv` | ⬜ Pending | Step 2 |
+| `data/test_split.csv` | ⬜ Pending | Step 2 |
+| `backend/phase1_outputs/keyword_dictionary.json` | ⬜ Pending | Step 3 |
+| `backend/phase1_outputs/act_knowledge_base.json` | ⬜ Pending | Step 4 |
+
+---
+
+### Phase 2 — Detailed Tracking
+
+| Item | Status | Notes |
+|------|--------|-------|
+| `backend/app/` folder structure | ⬜ Pending | Step 5 |
+| `requirements.txt` | ⬜ Pending | Step 5 |
+| `.env` file | ⬜ Pending | Step 5 |
+| `preprocessor.py` | ⬜ Pending | Step 6 |
+| `whisper_service.py` (Groq API) | ⬜ Pending | Step 7 |
+| `keyword_classifier.py` | ⬜ Pending | Step 8 |
+| `main.py` (FastAPI) | ⬜ Pending | Step 9 |
+| API test (/health, /transcribe) | ⬜ Pending | Step 10 |
+
+---
+
+### Phase 3 — Detailed Tracking
+
+| Item | Status | Notes |
+|------|--------|-------|
+| ChromaDB vector store | ⬜ Pending | Step 11 |
+| `rag_engine.py` | ⬜ Pending | Step 12 |
+| `entity_extractor.py` | ⬜ Pending | Step 13 |
+| `pdf_generator.py` | ⬜ Pending | Step 14 |
+| Phase 3 endpoints in `main.py` | ⬜ Pending | Step 15 |
+| RAG accuracy test | ⬜ Pending | Step 16 |
+
+---
+
+### Phase 4 — Detailed Tracking
+
+| Item | Status | Notes |
+|------|--------|-------|
+| `geospatial/uno_locations.json` | ⬜ Pending | Step 17 |
+| React app (Vite) | ⬜ Pending | Step 18 |
+| `VoiceRecorder.jsx` | ⬜ Pending | Step 18 |
+| `MapView.jsx` (Leaflet.js) | ⬜ Pending | Step 19 |
+| `EmergencyButtons.jsx` | ⬜ Pending | Step 20 |
+| `PDFDownload` component | ⬜ Pending | Step 20 |
+| Firebase Firestore setup | ⬜ Pending | Step 21 |
+| Vercel + Render deploy | ⬜ Pending | Step 22 |
+
+---
+
+### Phase 5 — Detailed Tracking
+
+| Item | Status | Notes |
+|------|--------|-------|
+| End-to-end test (3 cases) | ⬜ Pending | Step 23 |
+| Bug fix | ⬜ Pending | Step 23 |
+| Thesis (Blackbook) | ⬜ Pending | Step 24 |
+| Demo video | ⬜ Pending | Step 24 |
+| Presentation slides | ⬜ Pending | Step 24 |
+
+---
+
+> **Rule:** প্রতিটা Step শেষ হলে Lamia confirm করবে → তারপর পরের Step শুরু হবে।
+> **Next:** Step 2 — `cleaned_dataset.csv` + `train_split.csv` + `test_split.csv`
 
 ---
 
