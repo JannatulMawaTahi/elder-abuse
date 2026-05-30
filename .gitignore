@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.env
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
+
+# Data files (raw — don't push to GitHub)
+data/Elder_abuse_Dataset.csv
+data/cleaned_dataset.csv
+data/train_split.csv
+data/test_split.csv
+data/*.png
+data/*.jpg
+
+# Backend
+backend/vector_store/
+backend/fonts/
+
+# OS
+.DS_Store
+Thumbs.db
