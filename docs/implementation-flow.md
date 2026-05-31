@@ -926,10 +926,10 @@ Start: Now           End: Week 8
 ✅ Step 10: Phase 2 test complete (3 real audio tests, English perfect)
 
 ── PHASE 3 ──────────────────────────────────────────────────────
-⏭️ Step 11: ChromaDB vector store build                       ← NEXT
-⬜ Step 12: rag_engine.py (Gemini Flash)
-⬜ Step 13: entity_extractor.py (basic regex)
-⬜ Step 14: pdf_generator.py (fpdf2 + NotoSansBengali)
+✅ Step 11: RAG retrieval (Option C: keyword/category, not ChromaDB)
+✅ Step 12: rag_engine.py (Gemini 2.5 Flash) — solves Whisper typos
+✅ Step 13: entity_extractor.py + reporter-mode (self/third-party)
+🔄 Step 14: pdf_generator.py — format + Bengali rendering verified, generator pending ← NEXT
 ⬜ Step 15: main.py update — Phase 3 endpoints
 ⬜ Step 16: Phase 3 test complete
 
@@ -946,7 +946,13 @@ Start: Now           End: Week 8
 ⬜ Step 24: Thesis + demo video + presentation
 ```
 
-**Progress: 10 / 24 Steps complete (41.7%)** — 🎉 **PHASE 2 COMPLETE**
+**Progress: 13 / 24 Steps complete (54%)** — Phase 3 চলছে (RAG + entity done)
+
+> **Phase 3 Architecture Decision (Option C):** ChromaDB vector store বাদ দিয়ে
+> keyword/category-based retrieval + Gemini ব্যবহার করা হয়েছে। কারণ:
+> (১) Bangla embedding models (MiniLM 2/5, e5-base 4/5) Whisper typo case এ fail করে;
+> (২) Gemini typo সঠিক বোঝে; (৩) কোনো 1GB model নেই → free-tier deploy সহজ।
+> `vector_store.py` thesis comparison হিসেবে রাখা হয়েছে।
 
 ---
 
@@ -1005,6 +1011,10 @@ npm run dev
 | React PWA (not native app) | Browser এ চলে — Play Store upload লাগে না |
 | 64 UNO locations (not 495) | 64 district HQ দিয়ে শুরু — 495 later |
 | fpdf2 (not ReportLab) | Simple API, Bangla font support — ReportLab complex |
+| fpdf2 + **uharfbuzz** text shaping | বাংলা যুক্তাক্ষর সঠিক render করতে HarfBuzz দরকার; ছাড়া text অগোছালো হয় |
+| List items = single multi_cell (`\n`) | fpdf2 bug: পরপর multi_cell + shaping এ glyph হারায় — এক multi_cell এ join করে এড়ানো |
+| PDF = clean letter only | কোনো banner/disclaimer/submission text PDF এ নয় (authentic থাকে); ওগুলো screen এ (Phase 4) |
+| Reporter mode → advice/PDF | self / third-party / anonymous — auto-detected, কোনো বাড়তি প্রশ্ন নেই |
 
 ---
 
@@ -1016,7 +1026,7 @@ npm run dev
 |-------|--------|------|------|---------|
 | **Phase 1** — Dataset & EDA | ✅ **Done** | Week 1–2 | Steps 1, 2, 3, 4 | — |
 | **Phase 2** — Backend + Whisper | ✅ **Done** | Week 2–3 | Steps 5–10 | — |
-| **Phase 3** — RAG + PDF | ⏭️ **Next Up** | Week 4–5 | — | Steps 11–16 |
+| **Phase 3** — RAG + PDF | 🔄 In Progress | Week 4–5 | Steps 11, 12, 13 | Steps 14–16 |
 | **Phase 4** — Frontend + Map | ⬜ Pending | Week 6–7 | — | Steps 17–22 |
 | **Phase 5** — Test + Deploy | ⬜ Pending | Week 8 | — | Steps 23–24 |
 
@@ -1084,10 +1094,19 @@ npm run dev
 
 | Item | Status | Notes |
 |------|--------|-------|
-| ChromaDB vector store | ⏭️ **NEXT** | Step 11 |
-| `rag_engine.py` | ⬜ Pending | Step 12 |
-| `entity_extractor.py` | ⬜ Pending | Step 13 |
-| `pdf_generator.py` | ⬜ Pending | Step 14 |
+| `vector_store.py` (ChromaDB) | ✅ Done | Built & tested; kept as thesis comparison (not in main pipeline) |
+| Embedding model evaluation | ✅ Done | MiniLM 2/5, e5-base 4/5 — both fail Whisper typo case |
+| RAG retrieval (Option C) | ✅ Done | keyword/category retrieval in rag_engine.py |
+| `rag_engine.py` (Gemini 2.5 Flash) | ✅ Done | 18/18 tests; real typo complaint → correct classification |
+| **Step 11+12 — RAG Engine** | ✅ **DONE** | Confirmed by Lamia (Whisper typo now classified correctly) |
+| `entity_extractor.py` | ✅ Done | Gemini extraction; null for unknown (no hallucination) |
+| Reporter mode (self / third-party) | ✅ Done | Neighbor reports → reporter-aware advice; anonymous-ready |
+| `tests/test_entity_extractor.py` | ✅ Done | 16 tests inc. neighbor-unknown-victim case |
+| **Step 13 — Entity Extractor** | ✅ **DONE** | Confirmed by Lamia (34 tests pass) |
+| Bengali PDF rendering fix | ✅ Done | uharfbuzz + `set_text_shaping(True)` → correct যুক্তাক্ষর; verified by reading PDF |
+| Bengali font setup | ✅ Done | backend/fonts/ — NotoSansBengali Regular+Bold + NotoSans (Latin fallback) |
+| Complaint PDF format (দরখাস্ত) | ✅ Validated | Sample reviewed by Lamia; clean letter, no banner/submission text inside PDF |
+| `pdf_generator.py` (the real generator) | ⏭️ **NEXT** | Step 14 — build from validated format |
 | Phase 3 endpoints in `main.py` | ⬜ Pending | Step 15 |
 | RAG accuracy test | ⬜ Pending | Step 16 |
 
@@ -1121,7 +1140,16 @@ npm run dev
 ---
 
 > **Rule:** প্রতিটা Step শেষ হলে Lamia confirm করবে → তারপর পরের Step শুরু হবে।
-> **Next:** Step 11 — ChromaDB vector store build (Phase 3 শুরু — semantic search দিয়ে Whisper typo handle হবে)
+> **Next:** Step 14 — `pdf_generator.py` (validated দরখাস্ত format এ real generator;
+> self / third-party / anonymous handle করবে; RAG + entity data থেকে auto-fill)।
+>
+> **Note (Anonymous reporting):** backend ইতিমধ্যে নাম ছাড়া complaint handle করে
+> (Step 13)। User-facing "anonymous" toggle + privacy storage Phase 4 এ যোগ হবে।
+>
+> **Note (Frontend user flow — Phase 4, deferred):** voice record → "শেষ?" confirm
+> popup → transcript দেখানো + edit (এক screen এ "নাম গোপন রাখুন" checkbox সহ) →
+> clean PDF download/print → screen এ submission guidance + নিকটস্থ UNO/থানা map।
+> এই UI/UX এখন design হবে না — Phase 4 এ backend-এর সাথে align করে করা হবে।
 
 ---
 

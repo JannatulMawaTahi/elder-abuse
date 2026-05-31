@@ -1,6 +1,5 @@
-# Elder Abuse AI — Phase 2 Dependencies
-# Python 3.10+ required
-# Phase 3 packages will be added later (chromadb, sentence-transformers)
+# Elder Abuse AI — Backend Dependencies
+# Python 3.10+ required (tested on 3.14)
 
 # ── FastAPI core ───────────────────────────────────────────────
 fastapi
@@ -22,9 +21,18 @@ groq
 
 # ── PDF Generation (Phase 3) ───────────────────────────────────
 fpdf2
+uharfbuzz          # HarfBuzz text shaping — required for correct Bengali conjuncts
 
-# ── Gemini LLM (Phase 3) ───────────────────────────────────────
+# ── Gemini LLM — RAG engine + entity extractor (Phase 3) ───────
 google-generativeai
+
+# ── Optional: vector_store.py (thesis comparison only, NOT in main
+#    pipeline). Heavy (~1GB torch). Install only if running the
+#    embedding/ChromaDB comparison. Main RAG uses Gemini, not these.
+# chromadb
+# sentence-transformers
+# langchain
+# langchain-community
 
 # ── Testing ────────────────────────────────────────────────────
 pytest

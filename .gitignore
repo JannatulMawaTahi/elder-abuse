@@ -19,8 +19,9 @@ data/*.png
 data/*.jpg
 
 # Backend
+# ChromaDB store — regenerable via build_store(), not committed
 backend/vector_store/
-backend/fonts/
+# backend/fonts/ IS committed — NotoSansBengali fonts needed for PDF generation
 
 # OS
 .DS_Store
