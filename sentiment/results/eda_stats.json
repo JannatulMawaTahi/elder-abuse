@@ -1,0 +1,311 @@
+{
+  "n_comments": 2301,
+  "polarity": {
+    "Negative": 1619,
+    "Neutral": 512,
+    "Positive": 170
+  },
+  "emotion": {
+    "Anger/Condemnation": 812,
+    "Victim-blaming": 293,
+    "Grief/Sympathy": 182,
+    "Prayer/Religious": 213,
+    "Neutral-Other": 801
+  },
+  "polarity_x_emotion": {
+    "Negative": {
+      "Anger/Condemnation": 812,
+      "Victim-blaming": 293,
+      "Grief/Sympathy": 182,
+      "Prayer/Religious": 51,
+      "Neutral-Other": 281
+    },
+    "Neutral": {
+      "Anger/Condemnation": 0,
+      "Victim-blaming": 0,
+      "Grief/Sympathy": 0,
+      "Prayer/Religious": 90,
+      "Neutral-Other": 422
+    },
+    "Positive": {
+      "Anger/Condemnation": 0,
+      "Victim-blaming": 0,
+      "Grief/Sympathy": 0,
+      "Prayer/Religious": 72,
+      "Neutral-Other": 98
+    }
+  },
+  "abuse_x_emotion_pct": {
+    "Anger/Condemnation": {
+      "Neglect": 30.0,
+      "Abandonment": 24.4,
+      "Physical Abuse": 46.2,
+      "Verbal Abuse": 52.5,
+      "Murder": 41.4
+    },
+    "Victim-blaming": {
+      "Neglect": 24.3,
+      "Abandonment": 11.5,
+      "Physical Abuse": 2.2,
+      "Verbal Abuse": 10.1,
+      "Murder": 0.0
+    },
+    "Grief/Sympathy": {
+      "Neglect": 7.7,
+      "Abandonment": 10.8,
+      "Physical Abuse": 6.9,
+      "Verbal Abuse": 5.1,
+      "Murder": 5.3
+    },
+    "Prayer/Religious": {
+      "Neglect": 8.8,
+      "Abandonment": 8.3,
+      "Physical Abuse": 10.0,
+      "Verbal Abuse": 7.7,
+      "Murder": 15.4
+    },
+    "Neutral-Other": {
+      "Neglect": 29.2,
+      "Abandonment": 45.0,
+      "Physical Abuse": 34.6,
+      "Verbal Abuse": 24.6,
+      "Murder": 37.9
+    }
+  },
+  "abuse_x_polarity_pct": {
+    "Negative": {
+      "Neglect": 73.9,
+      "Abandonment": 64.7,
+      "Physical Abuse": 71.7,
+      "Verbal Abuse": 77.8,
+      "Murder": 60.9
+    },
+    "Neutral": {
+      "Neglect": 20.2,
+      "Abandonment": 28.2,
+      "Physical Abuse": 22.5,
+      "Verbal Abuse": 16.5,
+      "Murder": 17.2
+    },
+    "Positive": {
+      "Neglect": 5.9,
+      "Abandonment": 7.1,
+      "Physical Abuse": 5.8,
+      "Verbal Abuse": 5.7,
+      "Murder": 21.9
+    }
+  },
+  "platform_counts": {
+    "YouTube": 1632,
+    "Facebook": 669
+  },
+  "platform_x_emotion_pct": {
+    "Anger/Condemnation": {
+      "Facebook": 36.6,
+      "YouTube": 34.7
+    },
+    "Victim-blaming": {
+      "Facebook": 0.9,
+      "YouTube": 17.6
+    },
+    "Grief/Sympathy": {
+      "Facebook": 5.7,
+      "YouTube": 8.8
+    },
+    "Prayer/Religious": {
+      "Facebook": 9.9,
+      "YouTube": 9.0
+    },
+    "Neutral-Other": {
+      "Facebook": 46.9,
+      "YouTube": 29.8
+    }
+  },
+  "lang_counts": {
+    "bengali": 1899,
+    "latin": 367,
+    "bn+en": 33,
+    "arabic": 2
+  },
+  "lang_x_polarity_pct": {
+    "Negative": {
+      "bengali": 72.6,
+      "latin": 60.8,
+      "bn+en": 51.5,
+      "arabic": 0.0
+    },
+    "Neutral": {
+      "bengali": 20.4,
+      "latin": 30.5,
+      "bn+en": 36.4,
+      "arabic": 0.0
+    },
+    "Positive": {
+      "bengali": 7.0,
+      "latin": 8.7,
+      "bn+en": 12.1,
+      "arabic": 100.0
+    }
+  },
+  "median_charlen_by_emotion": {
+    "Anger/Condemnation": 54,
+    "Victim-blaming": 87,
+    "Grief/Sympathy": 40,
+    "Prayer/Religious": 47,
+    "Neutral-Other": 43
+  },
+  "mean_likes_by_emotion": {
+    "Anger/Condemnation": 0.44,
+    "Victim-blaming": 0.3,
+    "Grief/Sympathy": 4.45,
+    "Prayer/Religious": 0.44,
+    "Neutral-Other": 0.7
+  },
+  "emotion_share_by_abuse_pct": {
+    "Victim-blaming": {
+      "Neglect": 24.3,
+      "Abandonment": 11.5,
+      "Physical Abuse": 2.2,
+      "Verbal Abuse": 10.1,
+      "Murder": 0.0
+    },
+    "Prayer/Religious": {
+      "Neglect": 8.8,
+      "Abandonment": 8.3,
+      "Physical Abuse": 10.0,
+      "Verbal Abuse": 7.7,
+      "Murder": 15.4
+    }
+  },
+  "top_tokens": {
+    "Anger/Condemnation": [
+      [
+        "ছেলে",
+        106
+      ],
+      [
+        "সন্তান",
+        98
+      ],
+      [
+        "বিচার",
+        81
+      ],
+      [
+        "মা",
+        74
+      ],
+      [
+        "বাবা",
+        60
+      ],
+      [
+        "আল্লাহ",
+        59
+      ],
+      [
+        "কুলাঙ্গার",
+        59
+      ],
+      [
+        "আইনের",
+        57
+      ],
+      [
+        "উচিত",
+        57
+      ],
+      [
+        "ছেলের",
+        47
+      ]
+    ],
+    "Victim-blaming": [
+      [
+        "শিক্ষা",
+        86
+      ],
+      [
+        "মানুষ",
+        50
+      ],
+      [
+        "বাবা",
+        43
+      ],
+      [
+        "শিক্ষিত",
+        43
+      ],
+      [
+        "ছেলে",
+        41
+      ],
+      [
+        "মা",
+        40
+      ],
+      [
+        "সন্তান",
+        33
+      ],
+      [
+        "টাকা",
+        30
+      ],
+      [
+        "নাই",
+        29
+      ],
+      [
+        "বৃদ্ধাশ্রমে",
+        28
+      ]
+    ],
+    "Grief/Sympathy": [
+      [
+        "মা",
+        38
+      ],
+      [
+        "বাবা",
+        31
+      ],
+      [
+        "কষ্ট",
+        19
+      ],
+      [
+        "আল্লাহ",
+        18
+      ],
+      [
+        "নেই",
+        17
+      ],
+      [
+        "খুব",
+        17
+      ],
+      [
+        "ছেলে",
+        17
+      ],
+      [
+        "সন্তান",
+        16
+      ],
+      [
+        "দুঃখ",
+        14
+      ],
+      [
+        "দেখে",
+        14
+      ]
+    ]
+  },
+  "negative_share_pct": 70.4,
+  "victimblame_share_pct": 12.7,
+  "prayer_share_pct": 9.3
+}

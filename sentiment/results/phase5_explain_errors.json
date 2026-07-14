@@ -1,0 +1,323 @@
+{
+  "phase": "5 (deep analysis, batch 2)",
+  "explainability_top_words": {
+    "Negative": [
+      {
+        "token": "ai",
+        "weight": 0.919
+      },
+      {
+        "token": "বিচার",
+        "weight": 0.84
+      },
+      {
+        "token": "এমন",
+        "weight": 0.662
+      },
+      {
+        "token": "শিক্ষিত",
+        "weight": 0.661
+      },
+      {
+        "token": "অবস্থা",
+        "weight": 0.657
+      },
+      {
+        "token": "o",
+        "weight": 0.655
+      },
+      {
+        "token": "মহিলা",
+        "weight": 0.653
+      },
+      {
+        "token": "সে",
+        "weight": 0.65
+      },
+      {
+        "token": "দেশে",
+        "weight": 0.633
+      },
+      {
+        "token": "না",
+        "weight": 0.61
+      },
+      {
+        "token": "হায়রে",
+        "weight": 0.61
+      },
+      {
+        "token": "ছেলে",
+        "weight": 0.608
+      },
+      {
+        "token": "কে",
+        "weight": 0.605
+      },
+      {
+        "token": "খারাপ",
+        "weight": 0.595
+      },
+      {
+        "token": "কষ্ট",
+        "weight": 0.595
+      }
+    ],
+    "Neutral": [
+      {
+        "token": "করা উচিত",
+        "weight": 0.94
+      },
+      {
+        "token": "মা বাবা",
+        "weight": 0.916
+      },
+      {
+        "token": "ভাবে",
+        "weight": 0.844
+      },
+      {
+        "token": "দাও",
+        "weight": 0.834
+      },
+      {
+        "token": "করতে হবে",
+        "weight": 0.819
+      },
+      {
+        "token": "baber",
+        "weight": 0.808
+      },
+      {
+        "token": "হতে পারে",
+        "weight": 0.787
+      },
+      {
+        "token": "সাহায্য করবেন",
+        "weight": 0.771
+      },
+      {
+        "token": "চিনি",
+        "weight": 0.76
+      },
+      {
+        "token": "নাকি",
+        "weight": 0.757
+      },
+      {
+        "token": "ara",
+        "weight": 0.755
+      },
+      {
+        "token": "২",
+        "weight": 0.751
+      },
+      {
+        "token": "to",
+        "weight": 0.736
+      },
+      {
+        "token": "এটাই",
+        "weight": 0.727
+      },
+      {
+        "token": "এলাকায়",
+        "weight": 0.713
+      }
+    ],
+    "Positive": [
+      {
+        "token": "ভিডিও",
+        "weight": 1.119
+      },
+      {
+        "token": "আল্লাহ সবাইকে",
+        "weight": 1.075
+      },
+      {
+        "token": "আমার বাবা",
+        "weight": 0.945
+      },
+      {
+        "token": "good",
+        "weight": 0.944
+      },
+      {
+        "token": "ধন্যবাদ",
+        "weight": 0.904
+      },
+      {
+        "token": "সহায়",
+        "weight": 0.89
+      },
+      {
+        "token": "ভালো",
+        "weight": 0.881
+      },
+      {
+        "token": "k",
+        "weight": 0.877
+      },
+      {
+        "token": "সুন্দর",
+        "weight": 0.871
+      },
+      {
+        "token": "babai",
+        "weight": 0.864
+      },
+      {
+        "token": "দান করো",
+        "weight": 0.816
+      },
+      {
+        "token": "ওনাকে",
+        "weight": 0.802
+      },
+      {
+        "token": "জন্য",
+        "weight": 0.793
+      },
+      {
+        "token": "action",
+        "weight": 0.774
+      },
+      {
+        "token": "baba maa",
+        "weight": 0.759
+      }
+    ]
+  },
+  "error_analysis": {
+    "n_test": 345,
+    "svm_acc": 0.7884057971014493,
+    "bert_acc": 0.7275362318840579,
+    "svm_confusions": {
+      "Neutral→Negative": 36,
+      "Negative→Neutral": 22,
+      "Positive→Negative": 7,
+      "Positive→Neutral": 5,
+      "Neutral→Positive": 2,
+      "Negative→Positive": 1
+    },
+    "bert_confusions": {
+      "Neutral→Negative": 43,
+      "Negative→Neutral": 31,
+      "Positive→Negative": 7,
+      "Neutral→Positive": 6,
+      "Negative→Positive": 4,
+      "Positive→Neutral": 3
+    },
+    "both_wrong": 43,
+    "svm_only_wrong": 30,
+    "bert_only_wrong": 51,
+    "error_rate_by_group": {
+      "svm_emoji": 0.22448979591836735,
+      "svm_no_emoji": 0.20945945945945946,
+      "bert_emoji": 0.42857142857142855,
+      "bert_no_emoji": 0.24662162162162163,
+      "svm_latin_script": 0.3157894736842105,
+      "svm_bangla": 0.1909722222222222,
+      "bert_latin_script": 0.5087719298245614,
+      "bert_bangla": 0.22569444444444445
+    },
+    "hardest_examples": [
+      {
+        "comment_id": "C00064",
+        "text": "Ai Milton shomdder keo koto bitorko korselo.jara Valo kaj Kore tader o char nai",
+        "true": "Neutral",
+        "svm": "Negative",
+        "bert": "Negative",
+        "lang": "latin"
+      },
+      {
+        "comment_id": "C00163",
+        "text": "উনাকে বৃদ্ধা আশ্রমে তো দিতে পারে, সাংবাদিক  ভাইরা চাইলে পারবে",
+        "true": "Neutral",
+        "svm": "Negative",
+        "bert": "Negative",
+        "lang": "bengali"
+      },
+      {
+        "comment_id": "C00206",
+        "text": "নাদিরা বেগম কি বেঁচে আছেন?  She seems very lonely and you don't  even mentioned about her children. I hope she find peac",
+        "true": "Positive",
+        "svm": "Neutral",
+        "bert": "Negative",
+        "lang": "bn+en"
+      },
+      {
+        "comment_id": "C00277",
+        "text": "৩১ বছর আগে তো উনি বুড়া ছিলেন না",
+        "true": "Neutral",
+        "svm": "Negative",
+        "bert": "Negative",
+        "lang": "bengali"
+      },
+      {
+        "comment_id": "C00282",
+        "text": "আপনি কলেজে শিক্ষক আপনার সন্তানদের মানুষ করতে যে পরিমাণ পরিশ্রম হয়েছে আপনার। তাহলে আপনাকে মানুষের মতো মানুষ করতে আপনার প",
+        "true": "Neutral",
+        "svm": "Negative",
+        "bert": "Negative",
+        "lang": "bengali"
+      },
+      {
+        "comment_id": "C00316",
+        "text": "এমন দুর্দশা থেকে মুক্ত করতেই কুরআনের আগমন। আপনারা আধুনিক হতে হতে আমেরিকাকে ছাড়িয়ে যেতে পারেন, তবে শান্তি জিনিসটা কুরআন",
+        "true": "Neutral",
+        "svm": "Negative",
+        "bert": "Negative",
+        "lang": "bengali"
+      },
+      {
+        "comment_id": "C00369",
+        "text": "Briddasromtir payment ki rokom ,ki dhoroner sujog shubidha achey ? Address din pls.Ami ctg thekey dekchi.amr boyosh 70 b",
+        "true": "Neutral",
+        "svm": "Positive",
+        "bert": "Negative",
+        "lang": "latin"
+      },
+      {
+        "comment_id": "C00414",
+        "text": "Perfect bou hote parbo kina jni na kintu sosur sasuri k kokhonoi biddhasrom a pathabo na😢",
+        "true": "Positive",
+        "svm": "Negative",
+        "bert": "Negative",
+        "lang": "latin"
+      },
+      {
+        "comment_id": "C00489",
+        "text": "বৃদ্ধা  আশ্রম এ  অনেক  বৃদ্ধা  মহিলা পুরুষ  আছে   ভালো  থাকবেন  ইনশাল্লাহ আমিন",
+        "true": "Positive",
+        "svm": "Neutral",
+        "bert": "Negative",
+        "lang": "bengali"
+      },
+      {
+        "comment_id": "C00522",
+        "text": "মায়ের চোখের পানি কখনো বৃথা যায়  না",
+        "true": "Neutral",
+        "svm": "Negative",
+        "bert": "Negative",
+        "lang": "bengali"
+      },
+      {
+        "comment_id": "C00636",
+        "text": "মেয়েদের কথা শুনে মনটা ভরে গেলে,",
+        "true": "Positive",
+        "svm": "Negative",
+        "bert": "Neutral",
+        "lang": "bengali"
+      },
+      {
+        "comment_id": "C00735",
+        "text": "Bastobota boro kothin... Ekhon young generation basto career niye ... Onnoke deyar somoy koi? Tai aj jodi amar bari thek",
+        "true": "Neutral",
+        "svm": "Negative",
+        "bert": "Negative",
+        "lang": "latin"
+      }
+    ]
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "phase": "5 (deep analysis, batch 1)",
+  "n_full": 2301,
+  "n_test": 345,
+  "language": {
+    "distribution": {
+      "Bangla": 1899,
+      "Banglish (Latin)": 367,
+      "Code-mixed": 33,
+      "Arabic": 2
+    },
+    "polarity_by_language": {
+      "Arabic": {
+        "Negative": 0.0,
+        "Neutral": 0.0,
+        "Positive": 1.0
+      },
+      "Bangla": {
+        "Negative": 0.726,
+        "Neutral": 0.204,
+        "Positive": 0.07
+      },
+      "Banglish (Latin)": {
+        "Negative": 0.608,
+        "Neutral": 0.305,
+        "Positive": 0.087
+      },
+      "Code-mixed": {
+        "Negative": 0.515,
+        "Neutral": 0.364,
+        "Positive": 0.121
+      }
+    },
+    "test_accuracy_by_language": [
+      {
+        "lang": "Bangla",
+        "n": 288,
+        "svm_acc": 0.809,
+        "bert_acc": 0.774
+      },
+      {
+        "lang": "Banglish (Latin)",
+        "n": 52,
+        "svm_acc": 0.673,
+        "bert_acc": 0.462
+      },
+      {
+        "lang": "Code-mixed",
+        "n": 5,
+        "svm_acc": 0.8,
+        "bert_acc": 0.8
+      }
+    ]
+  },
+  "embedding": {
+    "ari_cluster_vs_emotion_k5": 0.050847300036024126,
+    "ari_cluster_vs_polarity_k3": 0.0590212974742192,
+    "n_embedded": 2301
+  },
+  "religion": {
+    "religious_share": 0.2207735767057801,
+    "polarity_by_religious": {
+      "Non-religious": {
+        "Negative": 0.717,
+        "Neutral": 0.229,
+        "Positive": 0.054
+      },
+      "Religious": {
+        "Negative": 0.657,
+        "Neutral": 0.199,
+        "Positive": 0.144
+      }
+    },
+    "emotion_within_religious": {
+      "Anger/Condemnation": 0.23,
+      "Grief/Sympathy": 0.049,
+      "Prayer/Religious": 0.343,
+      "Victim-blaming": 0.236,
+      "Neutral-Other": 0.142
+    }
+  }
+}

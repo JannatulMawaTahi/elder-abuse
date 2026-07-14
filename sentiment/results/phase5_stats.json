@@ -1,0 +1,88 @@
+{
+  "phase": "5 (batch 3) statistical tests + language confusion",
+  "chi_square_tests": [
+    {
+      "test": "chi-square",
+      "cross_tab": "emotion × abuse-type",
+      "chi2": 265.89,
+      "dof": 16,
+      "p_value": 2.816002638227326e-47,
+      "cramers_v": 0.17,
+      "effect": "small",
+      "significant": true,
+      "table_shape": [
+        5,
+        5
+      ]
+    },
+    {
+      "test": "chi-square",
+      "cross_tab": "polarity × abuse-type",
+      "chi2": 79.98,
+      "dof": 8,
+      "p_value": 4.924566734512862e-14,
+      "cramers_v": 0.132,
+      "effect": "small",
+      "significant": true,
+      "table_shape": [
+        3,
+        5
+      ]
+    },
+    {
+      "test": "chi-square",
+      "cross_tab": "emotion × platform",
+      "chi2": 150.4,
+      "dof": 4,
+      "p_value": 1.67194650839493e-31,
+      "cramers_v": 0.256,
+      "effect": "small",
+      "significant": true,
+      "table_shape": [
+        5,
+        2
+      ]
+    },
+    {
+      "test": "chi-square",
+      "cross_tab": "polarity × platform",
+      "chi2": 4.24,
+      "dof": 2,
+      "p_value": 0.12011179717876674,
+      "cramers_v": 0.043,
+      "effect": "negligible",
+      "significant": false,
+      "table_shape": [
+        3,
+        2
+      ]
+    },
+    {
+      "test": "chi-square",
+      "cross_tab": "polarity × language",
+      "chi2": 27.25,
+      "dof": 4,
+      "p_value": 1.7704234551009717e-05,
+      "cramers_v": 0.077,
+      "effect": "negligible",
+      "significant": true,
+      "table_shape": [
+        3,
+        3
+      ]
+    }
+  ],
+  "fisher_exact": {
+    "test": "fisher-exact (2×2)",
+    "cross_tab": "victim-blaming (yes/no) × Neglect/Abandonment (yes/no)",
+    "odds_ratio": 4.87,
+    "p_value": 3.8968159208411254e-25,
+    "significant": true,
+    "table": {
+      "vb_and_neglect": 253,
+      "vb_not_neglect": 40,
+      "notvb_neglect": 1134,
+      "notvb_not_neglect": 874
+    }
+  }
+}

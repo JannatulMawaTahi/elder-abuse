@@ -1,0 +1,41 @@
+{
+  "task": "sentiment/polarity",
+  "phase": "3 (BanglaBERT)",
+  "model": "sagorsarker/bangla-bert-base",
+  "dev_split": "val (test locked)",
+  "macro_f1": 0.5794370976122571,
+  "accuracy": 0.7130434782608696,
+  "per_class": {
+    "Negative": {
+      "precision": 0.7961538461538461,
+      "recall": 0.8518518518518519,
+      "f1-score": 0.8230616302186878,
+      "support": 243.0
+    },
+    "Neutral": {
+      "precision": 0.42592592592592593,
+      "recall": 0.3026315789473684,
+      "f1-score": 0.35384615384615387,
+      "support": 76.0
+    },
+    "Positive": {
+      "precision": 0.5161290322580645,
+      "recall": 0.6153846153846154,
+      "f1-score": 0.5614035087719298,
+      "support": 26.0
+    },
+    "accuracy": 0.7130434782608696,
+    "macro avg": {
+      "precision": 0.5794029347792788,
+      "recall": 0.5899560153946118,
+      "f1-score": 0.5794370976122571,
+      "support": 345.0
+    },
+    "weighted avg": {
+      "precision": 0.69349307195497,
+      "recall": 0.7130434782608696,
+      "f1-score": 0.6999790581551275,
+      "support": 345.0
+    }
+  }
+}

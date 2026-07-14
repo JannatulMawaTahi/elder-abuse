@@ -1,0 +1,36 @@
+{
+  "raw_labelled": 2301,
+  "removed_duplicate_text": 2,
+  "after_dedup": 2299,
+  "seed": 42,
+  "target": "polarity",
+  "split_ratio": "70/15/15",
+  "split_sizes": {
+    "train": 1609,
+    "val": 345,
+    "test": 345
+  },
+  "polarity_distribution": {
+    "overall": {
+      "Negative": 1618,
+      "Neutral": 511,
+      "Positive": 170
+    },
+    "train": {
+      "Negative": 1132,
+      "Neutral": 358,
+      "Positive": 119
+    },
+    "val": {
+      "Negative": 243,
+      "Neutral": 76,
+      "Positive": 26
+    },
+    "test": {
+      "Negative": 243,
+      "Neutral": 77,
+      "Positive": 25
+    }
+  },
+  "emotion_status": "preserved as a column (deferred; not the active target)"
+}

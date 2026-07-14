@@ -1,0 +1,72 @@
+{
+  "phase": "4 (final test-set evaluation)",
+  "test_set": "locked (sha256-verified, touched once)",
+  "n_test": 345,
+  "test": {
+    "baseline_linear_svm": {
+      "macro_f1": 0.6830553681030881,
+      "weighted_f1": 0.7801681343845575,
+      "accuracy": 0.7884057971014493,
+      "per_class": {
+        "Negative": {
+          "precision": 0.8365019011406845,
+          "recall": 0.9053497942386831,
+          "f1-score": 0.8695652173913043,
+          "support": 243.0
+        },
+        "Neutral": {
+          "precision": 0.5909090909090909,
+          "recall": 0.5064935064935064,
+          "f1-score": 0.5454545454545454,
+          "support": 77.0
+        },
+        "Positive": {
+          "precision": 0.8125,
+          "recall": 0.52,
+          "f1-score": 0.6341463414634146,
+          "support": 25.0
+        }
+      }
+    },
+    "banglabert_tuned": {
+      "macro_f1": 0.611072339733004,
+      "weighted_f1": 0.7182435878945892,
+      "accuracy": 0.7275362318840579,
+      "per_class": {
+        "Negative": {
+          "precision": 0.8062015503875969,
+          "recall": 0.8559670781893004,
+          "f1-score": 0.8303393213572854,
+          "support": 243.0
+        },
+        "Neutral": {
+          "precision": 0.45161290322580644,
+          "recall": 0.36363636363636365,
+          "f1-score": 0.4028776978417266,
+          "support": 77.0
+        },
+        "Positive": {
+          "precision": 0.6,
+          "recall": 0.6,
+          "f1-score": 0.6,
+          "support": 25.0
+        }
+      }
+    }
+  },
+  "validation_reference": {
+    "baseline": {
+      "macro_f1": null,
+      "accuracy": null
+    },
+    "bert": {
+      "macro_f1": 0.5794370976122571,
+      "accuracy": 0.7130434782608696
+    }
+  },
+  "mcnemar_baseline_vs_bert": {
+    "baseline_only_correct": 51,
+    "bert_only_correct": 30,
+    "p_value": 0.02565435797169625
+  }
+}
