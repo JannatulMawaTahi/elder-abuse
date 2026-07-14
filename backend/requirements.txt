@@ -16,8 +16,11 @@ audioop-lts          # required for pydub on Python 3.13+
 soundfile
 numpy
 
-# ── Speech-to-Text (Groq Whisper API) ──────────────────────────
+# ── Speech-to-Text (Groq Whisper API) — optional voice input ───
 groq
+
+# ── Text-to-Speech — Bangla questions/results read aloud ───────
+edge-tts           # bn-BD neural voices, free, no API key
 
 # ── PDF Generation (Phase 3) ───────────────────────────────────
 fpdf2
@@ -25,6 +28,10 @@ uharfbuzz          # HarfBuzz text shaping — required for correct Bengali conj
 
 # ── Gemini LLM — RAG engine + entity extractor (Phase 3) ───────
 google-generativeai
+
+# ── Firestore — anonymized dashboard records (saved only on consent)
+# Falls back to a local JSON file if backend/firebase-key.json is absent.
+firebase-admin
 
 # ── Optional: vector_store.py (thesis comparison only, NOT in main
 #    pipeline). Heavy (~1GB torch). Install only if running the

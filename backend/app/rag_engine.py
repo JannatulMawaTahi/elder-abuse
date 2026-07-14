@@ -43,6 +43,12 @@ GEMINI_MODEL = "gemini-2.5-flash"
 # are skipped to keep the prompt focused.
 ALWAYS_INCLUDE = {"pma_sec5", "pma_sec7", "pma_sec8"}
 
+# Shown on every result screen — never overstate the AI's certainty.
+DISCLAIMER_BN = (
+    "এই ফলাফলটি আপনার দেওয়া উত্তরের ভিত্তিতে AI বিশ্লেষণ করে তৈরি করা হয়েছে। "
+    "এটি চূড়ান্ত আইনি সিদ্ধান্ত নয়।"
+)
+
 
 # ── Exceptions ────────────────────────────────────────────────────────────────
 class RagEngineError(Exception):
@@ -249,6 +255,139 @@ class RagEngine:
             "reporter_type":             entities["reporter_type"],
             "entities":                  entities,
         }
+
+    # ── Guided-assessment analysis (the main path in the new Q&A flow) ────────
+    def analyze_assessment(self, summary_bn: str,
+                           assessment: dict[str, Any]) -> dict[str, Any]:
+        """
+        Analyse a guided yes/no assessment.
+
+        Args:
+            summary_bn : Bangla summary of the user's answers
+                         (from question_engine.build_summary)
+            assessment : rule-based result from question_engine.assess()
+                         (confirmed categories, severity, risk, confidence, laws)
+
+        Gemini adds on top of the deterministic rules:
+            - legal reasoning grounded ONLY in the retrieved sections
+            - an explanation that quotes the user's OWN answers
+            - সম্ভাব্য কারণ (likely underlying causes)
+            - concrete next steps
+
+        Returns a dict ready for the result screen.
+        """
+        if not summary_bn or not summary_bn.strip():
+            raise RagEngineError("Empty assessment summary")
+
+        confirmed = assessment.get("confirmed_categories") or []
+
+        # Retrieve legal sections for every confirmed category (+ procedural ones)
+        sections: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        for cat in (confirmed or ["unknown"]):
+            for s in self._retrieve(cat):
+                if s["id"] not in seen:
+                    seen.add(s["id"])
+                    sections.append(s)
+
+        prompt = self._build_assessment_prompt(summary_bn, assessment, sections)
+
+        try:
+            response = self.model.generate_content(prompt)
+        except Exception as e:
+            raise GeminiAPIError(f"Gemini API call failed: {e}") from e
+
+        parsed = self._parse_json(response.text)
+
+        return {
+            # deterministic (from the rule engine) — used for metrics
+            "abuse_types":          confirmed,
+            "abuse_type_bn":        parsed.get("abuse_type_bn")
+                                    or " ও ".join(assessment.get("category_labels_bn", []))
+                                    or "নির্ধারণ করা যায়নি",
+            "severity":             assessment.get("severity", 0),
+            "risk_level":           assessment.get("risk_level", 1),
+            "risk_label_bn":        assessment.get("risk_label_bn", "কম"),
+            "confidence_percent":   assessment.get("confidence_percent", 0),
+            "emergency":            assessment.get("emergency", False),
+            "emergency_actions_bn": assessment.get("emergency_actions_bn", []),
+            "trust_blind_spot":     assessment.get("trust_blind_spot", False),
+            # from Gemini
+            "applicable_sections":  self._readable_sections(
+                                        parsed.get("applicable_sections")
+                                        or assessment.get("laws", [])),
+            "explanation_bn":       parsed.get("explanation_bn", ""),
+            "possible_causes_bn":   parsed.get("possible_causes_bn", []),
+            "recommendations_bn":   parsed.get("recommendations_bn", []),
+            "civil_or_criminal":    parsed.get("civil_or_criminal", "Unknown"),
+            "disclaimer_bn":        DISCLAIMER_BN,
+            "retrieved_ids":        [s["id"] for s in sections],
+        }
+
+    def _readable_sections(self, sections: list[str]) -> list[str]:
+        """
+        Turn any knowledge-base id into its human title.
+
+        The result screen is read aloud to an elder, so "pma_sec3" must never
+        reach it. Ids can arrive either from Gemini or from the rule engine's
+        fallback list, so both paths go through here. Anything that isn't a known
+        id is already a title and passes through unchanged.
+        """
+        out: list[str] = []
+        for s in sections:
+            entry = self.kb.get(s)
+            title = entry.get("section") if entry else s
+            if title and title not in out:
+                out.append(title)
+        return out
+
+    @staticmethod
+    def _build_assessment_prompt(summary_bn: str, assessment: dict[str, Any],
+                                 sections: list[dict[str, Any]]) -> str:
+        context = "\n\n".join(
+            f"[{s['id']}] {s['section']}\nবাংলা: {s['text']}\nEnglish: {s['text_en']}"
+            for s in sections
+        )
+        cats = ", ".join(assessment.get("category_labels_bn", [])) or "কিছু শনাক্ত হয়নি"
+
+        return f"""তুমি বাংলাদেশের একজন আইনি সহায়তা AI, যে বৃদ্ধ নির্যাতন (elder abuse) নিয়ে কাজ করে।
+
+ব্যবহারকারী কিছু সহজ হ্যাঁ/না প্রশ্নের উত্তর দিয়েছেন। নিচে তার উত্তরের সারাংশ দেওয়া হলো।
+
+গুরুত্বপূর্ণ নির্দেশনা:
+- শুধুমাত্র নিচে দেওয়া আইনি ধারাগুলোর ভিত্তিতে উত্তর দাও। কোনো ধারা বানিয়ো না।
+- ব্যাখ্যায় ব্যবহারকারীর **নিজের উত্তর উদ্ধৃত করো** ("আপনি বলেছেন ...")।
+- সব উত্তর **সহজ বাংলায়** দাও — বৃদ্ধ মানুষ যেন বোঝেন।
+- "সম্ভাব্য কারণ" — এই ধরনের নির্যাতনের পেছনে সাধারণত যে কারণ থাকে
+  (যেমন: পারিবারিক দ্বন্দ্ব, সম্পত্তি বিরোধ, আর্থিক নির্ভরশীলতা, মাদকাসক্তি)।
+  অনুমান হিসেবে দাও, নিশ্চিত দাবি নয়।
+- "applicable_sections" — শুধুমাত্র সেই ধারাগুলো দাও যেগুলো **লঙ্ঘিত হয়েছে**
+  (যেমন ভরণ-পোষণের বাধ্যবাধকতা, পরিত্যাগ নিষেধ, আঘাত)। অভিযোগ **পদ্ধতি**
+  (§5), **শাস্তি** (§7) বা **জরুরি সহায়তা** (§8) সংক্রান্ত ধারা এখানে দিয়ো না —
+  সেগুলো করণীয় অংশে উল্লেখ করো।
+- "recommendations_bn" — সর্বোচ্চ ৪টি, প্রতিটি ছোট ও সহজ বাক্যে (বৃদ্ধ শুনে
+  বুঝবেন)। নম্বর দিয়ো না — শুধু বাক্য।
+
+=== নিয়ম-ভিত্তিক প্রাথমিক বিশ্লেষণ (deterministic) ===
+শনাক্তকৃত ধরন : {cats}
+ঝুঁকির মাত্রা  : {assessment.get('risk_label_bn')} ({assessment.get('risk_level')}/5)
+জরুরি অবস্থা   : {"হ্যাঁ" if assessment.get('emergency') else "না"}
+
+=== প্রযোজ্য আইনি ধারাসমূহ ===
+{context}
+
+=== ব্যবহারকারীর উত্তরের সারাংশ ===
+{summary_bn}
+
+নিচের JSON format-এ উত্তর দাও (শুধু JSON):
+{{
+  "abuse_type_bn": "শনাক্তকৃত নির্যাতনের ধরন বাংলায় (যেমন: শারীরিক নির্যাতন ও অবহেলা)",
+  "applicable_sections": ["প্রযোজ্য ধারার তালিকা, যেমন PMA 2013 §3, দণ্ডবিধি §323"],
+  "explanation_bn": "কেন এই সিদ্ধান্ত — ব্যবহারকারীর উত্তর উদ্ধৃত করে ২-৪ বাক্যে",
+  "possible_causes_bn": ["সম্ভাব্য কারণ ১", "সম্ভাব্য কারণ ২", "সম্ভাব্য কারণ ৩"],
+  "recommendations_bn": ["করণীয় ১", "করণীয় ২", "করণীয় ৩"],
+  "civil_or_criminal": "Civil | Criminal | Both"
+}}"""
 
     @staticmethod
     def _parse_json(raw: str) -> dict[str, Any]:

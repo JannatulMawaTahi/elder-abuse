@@ -21,7 +21,27 @@ data/*.jpg
 # Backend
 # ChromaDB store — regenerable via build_store(), not committed
 backend/vector_store/
+# TTS audio cache — regenerable via prewarm(), not committed
+backend/tts_cache/
+backend/*.mp3
+# Firebase service account key — SECRET, never commit
+backend/firebase-key.json
+# Local fallback store (dev only; real data lives in Firestore)
+backend/local_reports.json
 # backend/fonts/ IS committed — NotoSansBengali fonts needed for PDF generation
+
+# Sentiment models — saved checkpoints (regenerable via train.py / train_bert.py)
+sentiment/models/
+.venv-bert/
+
+# Academic paperwork generators — kept locally, not on GitHub.
+# These build the IRB form, proposal, literature review, consent form and the
+# architecture/framework figures. They live on Lamia's machine only.
+_gen_*.py
+_fig_*.png
+
+# Build artifacts — regenerable, never commit
+implementation-plan.pdf
 
 # OS
 .DS_Store

@@ -1,0 +1,452 @@
+{
+  "meta": {
+    "version": "1.0",
+    "language": "bn",
+    "approved_by": "Lamia Islam Mim",
+    "note": "Guided yes/no question flow for elder abuse assessment. Adaptive: only the selected categories' follow-ups are asked (~10-13 questions total)."
+  },
+  "categories": {
+    "physical": {
+      "label_bn": "শারীরিক নির্যাতন",
+      "icon": "👊",
+      "severity": 4,
+      "laws": [
+        "PMA 2013 §3",
+        "দণ্ডবিধি §323",
+        "দণ্ডবিধি §324"
+      ]
+    },
+    "verbal": {
+      "label_bn": "মানসিক নির্যাতন",
+      "icon": "🗣️",
+      "severity": 1,
+      "laws": [
+        "দণ্ডবিধি §506"
+      ]
+    },
+    "financial": {
+      "label_bn": "আর্থিক নির্যাতন",
+      "icon": "💰",
+      "severity": 2,
+      "laws": [
+        "দণ্ডবিধি §406",
+        "দণ্ডবিধি §420"
+      ]
+    },
+    "neglect": {
+      "label_bn": "অবহেলা",
+      "icon": "🍚",
+      "severity": 2,
+      "laws": [
+        "PMA 2013 §4"
+      ]
+    },
+    "abandonment": {
+      "label_bn": "পরিত্যাগ",
+      "icon": "🏠",
+      "severity": 3,
+      "laws": [
+        "PMA 2013 §3",
+        "PMA 2013 §4"
+      ]
+    },
+    "murder": {
+      "label_bn": "মৃত্যুর ঘটনা",
+      "icon": "⚫",
+      "severity": 5,
+      "laws": [
+        "দণ্ডবিধি §302",
+        "দণ্ডবিধি §304"
+      ],
+      "third_party_only": true
+    }
+  },
+  "intro_screens": [
+    {
+      "id": "welcome",
+      "type": "welcome",
+      "field": "started",
+      "text_bn": "স্বাগতম। আমি আপনার সমস্যাটি বুঝতে কিছু সহজ প্রশ্ন করব। সব তথ্য গোপন রাখা হবে।",
+      "buttons": [
+        {
+          "label_bn": "▶ শুরু করুন",
+          "value": "start"
+        }
+      ]
+    },
+    {
+      "id": "q_reporter",
+      "type": "choice",
+      "field": "reporter_type",
+      "text_bn": "আপনি কি নিজে এই সমস্যার শিকার?",
+      "options": [
+        {
+          "label_bn": "আমি নিজে",
+          "value": "self"
+        },
+        {
+          "label_bn": "অন্যের পক্ষে",
+          "value": "third_party"
+        }
+      ]
+    },
+    {
+      "id": "q_age",
+      "type": "yes_no",
+      "field": "is_elder",
+      "text_bn": "ভুক্তভোগীর বয়স কি প্রায় ৬০ বছর বা তার বেশি?"
+    },
+    {
+      "id": "q_gender",
+      "type": "choice",
+      "field": "gender",
+      "text_bn": "ভুক্তভোগী কি পুরুষ না মহিলা?",
+      "options": [
+        {
+          "label_bn": "পুরুষ",
+          "value": "male"
+        },
+        {
+          "label_bn": "মহিলা",
+          "value": "female"
+        },
+        {
+          "label_bn": "বলতে চাই না",
+          "value": "undisclosed"
+        }
+      ]
+    },
+    {
+      "id": "q_location",
+      "type": "cascade",
+      "field": "location",
+      "text_bn": "আপনি কোন এলাকায় থাকেন?",
+      "step1_label_bn": "বিভাগ বেছে নিন",
+      "step2_label_bn": "জেলা বেছে নিন",
+      "source": "divisions"
+    }
+  ],
+  "category_select": {
+    "id": "q_problem",
+    "type": "multi_select",
+    "field": "selected_categories",
+    "text_bn": "আপনার কী সমস্যা হচ্ছে? (একাধিক বেছে নিতে পারেন)",
+    "hint_bn": "যেগুলো আপনার সাথে ঘটছে সেগুলোতে চাপ দিন।",
+    "min_select": 1
+  },
+  "followups": {
+    "physical": [
+      {
+        "id": "P1",
+        "type": "yes_no",
+        "text_bn": "গত ১২ মাসে কি আপনাকে মারধর, ধাক্কা, চড় বা লাথি দেওয়া হয়েছে?",
+        "yes_weight": 2
+      },
+      {
+        "id": "P2",
+        "type": "yes_no",
+        "text_bn": "আঘাতের কারণে কি কখনো ডাক্তার বা হাসপাতালে যেতে হয়েছে?",
+        "yes_weight": 2,
+        "escalates_severity": true
+      }
+    ],
+    "verbal": [
+      {
+        "id": "V1",
+        "type": "yes_no",
+        "text_bn": "আপনাকে কি গালিগালাজ, অপমান, ভয় দেখানো বা হুমকি দেওয়া হয়?",
+        "yes_weight": 2
+      },
+      {
+        "id": "V2",
+        "type": "yes_no",
+        "text_bn": "আপনাকে কি একঘরে করে রাখা হয় বা \"বোঝা\" মনে করা হয়?",
+        "yes_weight": 1
+      }
+    ],
+    "financial": [
+      {
+        "id": "F1",
+        "type": "yes_no",
+        "text_bn": "আপনার অনুমতি ছাড়া কি কেউ আপনার টাকা, পেনশন বা বয়স্ক ভাতা নিয়ে নেয়?",
+        "yes_weight": 2
+      },
+      {
+        "id": "F2",
+        "type": "yes_no",
+        "text_bn": "আপনার অনুমতি ছাড়া কি জমি বা সম্পত্তি লিখে নেওয়া হয়েছে?",
+        "yes_weight": 2,
+        "escalates_severity": true
+      }
+    ],
+    "neglect": [
+      {
+        "id": "N1",
+        "type": "yes_no",
+        "text_bn": "পরিবার কি ইচ্ছাকৃতভাবে আপনাকে খাবার, পানি বা যত্ন থেকে বঞ্চিত করে?",
+        "yes_weight": 2
+      },
+      {
+        "id": "N2",
+        "type": "yes_no",
+        "text_bn": "অসুস্থ হলে পরিবার কি ইচ্ছাকৃতভাবে চিকিৎসা বা ওষুধ দেয় না?",
+        "yes_weight": 2,
+        "escalates_severity": true
+      }
+    ],
+    "abandonment": [
+      {
+        "id": "A1",
+        "type": "yes_no",
+        "text_bn": "আপনাকে কি বাড়ি থেকে বের করে দেওয়া হয়েছে?",
+        "yes_weight": 2
+      },
+      {
+        "id": "A2",
+        "type": "yes_no",
+        "text_bn": "আপনাকে কি দীর্ঘ সময় একা ফেলে রাখা হয় বা পরিবার খোঁজ নেয় না?",
+        "yes_weight": 2
+      }
+    ],
+    "murder": [
+      {
+        "id": "M1",
+        "type": "yes_no",
+        "text_bn": "নির্যাতনের কারণে কি ভুক্তভোগী মারা গেছেন?",
+        "yes_weight": 3,
+        "emergency": true,
+        "emergency_action_bn": "জরুরি: এখনই ৯৯৯ নম্বরে কল করুন এবং নিকটস্থ থানায় জানান।"
+      }
+    ]
+  },
+  "closing_screens": [
+    {
+      "id": "AB1",
+      "type": "yes_no",
+      "field": "abuser_is_family",
+      "text_bn": "যিনি নির্যাতন করেন, তিনি কি পরিবারের সদস্য?"
+    },
+    {
+      "id": "AB2a",
+      "type": "options",
+      "field": "abuser_relation",
+      "text_bn": "সম্পর্ক বেছে নিন।",
+      "show_if": {
+        "field": "abuser_is_family",
+        "equals": true
+      },
+      "options": [
+        {
+          "label_bn": "ছেলে",
+          "value": "son"
+        },
+        {
+          "label_bn": "মেয়ে",
+          "value": "daughter"
+        },
+        {
+          "label_bn": "পুত্রবধূ",
+          "value": "daughter_in_law"
+        },
+        {
+          "label_bn": "জামাই",
+          "value": "son_in_law"
+        },
+        {
+          "label_bn": "নাতি-নাতনি",
+          "value": "grandchild"
+        },
+        {
+          "label_bn": "ভাই-বোন",
+          "value": "sibling"
+        },
+        {
+          "label_bn": "অন্য আত্মীয়",
+          "value": "relative"
+        }
+      ]
+    },
+    {
+      "id": "AB2b",
+      "type": "options",
+      "field": "abuser_relation",
+      "text_bn": "তিনি কে?",
+      "show_if": {
+        "field": "abuser_is_family",
+        "equals": false
+      },
+      "options": [
+        {
+          "label_bn": "প্রতিবেশী",
+          "value": "neighbor"
+        },
+        {
+          "label_bn": "অপরিচিত",
+          "value": "stranger"
+        },
+        {
+          "label_bn": "অন্য",
+          "value": "other"
+        }
+      ]
+    },
+    {
+      "id": "R1",
+      "type": "yes_no",
+      "field": "ongoing",
+      "text_bn": "নির্যাতন কি এখনো চলছে?",
+      "yes_raises_risk": true
+    },
+    {
+      "id": "R2",
+      "type": "yes_no",
+      "field": "needs_safe_place",
+      "text_bn": "আপনার কি এখনই নিরাপদ জায়গায় যাওয়ার প্রয়োজন আছে?",
+      "yes_is_emergency": true,
+      "emergency_action_bn": "জরুরি: এখনই ৯৯৯ নম্বরে কল করুন।"
+    },
+    {
+      "id": "extra_voice",
+      "type": "voice_optional",
+      "field": "extra_detail",
+      "text_bn": "আপনি কি আরও কিছু বলতে চান? (ইচ্ছা না হলে এড়িয়ে যান)",
+      "skip_label_bn": "এড়িয়ে যান"
+    }
+  ],
+  "consent_screen": {
+    "id": "consent_save",
+    "type": "yes_no",
+    "field": "consent_to_save",
+    "text_bn": "আপনি কি এই ঘটনার রিপোর্ট সংরক্ষণ করতে চান?",
+    "hint_bn": "সংরক্ষণ করলে শুধু পরিসংখ্যান রাখা হবে — আপনার নাম বা পরিচয় নয়।",
+    "yes_label_bn": "🟢 হ্যাঁ",
+    "no_label_bn": "🔴 না",
+    "on_yes": "save_to_firestore",
+    "on_no": "discard"
+  },
+  "result_spec": {
+    "sections_bn": [
+      "নির্যাতনের ধরন",
+      "ঝুঁকির মাত্রা",
+      "AI-এর সম্ভাব্যতা",
+      "লঙ্ঘিত আইন",
+      "সম্ভাব্য কারণ",
+      "AI-এর ব্যাখ্যা",
+      "করণীয়",
+      "জরুরি যোগাযোগ"
+    ],
+    "disclaimer_bn": "এই ফলাফলটি আপনার দেওয়া উত্তরের ভিত্তিতে AI বিশ্লেষণ করে তৈরি করা হয়েছে। এটি চূড়ান্ত আইনি সিদ্ধান্ত নয়।",
+    "emergency_contacts": [
+      {
+        "label_bn": "☎ জরুরি সেবা ৯৯৯",
+        "number": "999"
+      },
+      {
+        "label_bn": "☎ বিনামূল্যে আইনি সহায়তা (NLASO) ১৬৪৩০",
+        "number": "16430"
+      },
+      {
+        "label_bn": "☎ বিশ্বস্ত ব্যক্তিকে ফোন করুন",
+        "number": "user_defined"
+      }
+    ],
+    "risk_levels_bn": {
+      "1": "কম",
+      "2": "মাঝারি",
+      "3": "উচ্চ",
+      "4": "খুব উচ্চ",
+      "5": "জরুরি"
+    }
+  },
+  "ui_spec": {
+    "listen_button_bn": "🔊 শুনুন",
+    "progress_style": "graphical",
+    "yes_label_bn": "হ্যাঁ",
+    "no_label_bn": "না",
+    "yes_color": "green",
+    "no_color": "red",
+    "tts_every_screen": true
+  },
+  "divisions": {
+    "ঢাকা": [
+      "ঢাকা",
+      "গাজীপুর",
+      "নারায়ণগঞ্জ",
+      "নরসিংদী",
+      "মুন্সিগঞ্জ",
+      "মানিকগঞ্জ",
+      "টাঙ্গাইল",
+      "কিশোরগঞ্জ",
+      "ফরিদপুর",
+      "গোপালগঞ্জ",
+      "মাদারীপুর",
+      "শরীয়তপুর",
+      "রাজবাড়ী"
+    ],
+    "চট্টগ্রাম": [
+      "চট্টগ্রাম",
+      "কক্সবাজার",
+      "কুমিল্লা",
+      "ব্রাহ্মণবাড়িয়া",
+      "চাঁদপুর",
+      "ফেনী",
+      "নোয়াখালী",
+      "লক্ষ্মীপুর",
+      "রাঙ্গামাটি",
+      "খাগড়াছড়ি",
+      "বান্দরবান"
+    ],
+    "রাজশাহী": [
+      "রাজশাহী",
+      "নাটোর",
+      "নওগাঁ",
+      "চাঁপাইনবাবগঞ্জ",
+      "পাবনা",
+      "সিরাজগঞ্জ",
+      "বগুড়া",
+      "জয়পুরহাট"
+    ],
+    "খুলনা": [
+      "খুলনা",
+      "বাগেরহাট",
+      "সাতক্ষীরা",
+      "যশোর",
+      "ঝিনাইদহ",
+      "মাগুরা",
+      "নড়াইল",
+      "কুষ্টিয়া",
+      "চুয়াডাঙ্গা",
+      "মেহেরপুর"
+    ],
+    "বরিশাল": [
+      "বরিশাল",
+      "পটুয়াখালী",
+      "ভোলা",
+      "পিরোজপুর",
+      "বরগুনা",
+      "ঝালকাঠি"
+    ],
+    "সিলেট": [
+      "সিলেট",
+      "মৌলভীবাজার",
+      "হবিগঞ্জ",
+      "সুনামগঞ্জ"
+    ],
+    "রংপুর": [
+      "রংপুর",
+      "দিনাজপুর",
+      "ঠাকুরগাঁও",
+      "পঞ্চগড়",
+      "নীলফামারী",
+      "লালমনিরহাট",
+      "কুড়িগ্রাম",
+      "গাইবান্ধা"
+    ],
+    "ময়মনসিংহ": [
+      "ময়মনসিংহ",
+      "জামালপুর",
+      "শেরপুর",
+      "নেত্রকোনা"
+    ]
+  }
+}
